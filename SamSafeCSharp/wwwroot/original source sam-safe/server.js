@@ -50,7 +50,7 @@ safe.initTimeTraveler(myTimeTraveler) ;
 var config = {} ;
 config.port = 5425 ;
 config.loginKey = 'abcdef0123456789' ;
-config.adminDirectory = './console/bower_components'
+config.adminDirectory = './console/bower_components' ;
 config.username = 'sam' ;
 config.password = 'nomvc' ;
 

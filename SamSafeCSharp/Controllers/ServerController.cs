@@ -13,32 +13,40 @@ namespace SafeCSharp
     public class ServerController : Controller
     {
         public Safe safe { get; set; }
-        public Action action { get; set; }
-        public Model model { get; set; }
-        public State state { get; set; }
-        public View view { get; set; }
+        public Actions action { get; } // not implemented on the server
+        public Model model { get; }
+        public State state { get; }
+        public View view { get; }
         public Config config { get; set; }
         public string[] serverResponses { get; set; }
         public string v { get; set; }
         public string r { get; set; }
         public string d { get; set; }
         public string a { get; set; }
-        public DefaultTimeTraveler timeTraveler { get; set; }
+        public DefaultTimeTraveler timeTraveler { get; }
 
         public ServerController(Actions action, Model model, State state, View view)
         {
+            this.action = action;
+            this.model = model;
+            this.state = state;
+            this.view = view;
+
+            this.safe=new Safe();
             safe.init(action, model, state, view);
 
             // use default time traveler
             timeTraveler = new DefaultTimeTraveler();
             safe.initTimeTraveler(timeTraveler);
 
-            config = null;
-            config.port = 5425;
-            config.loginKey = "abcdef0123456789";
-            config.adminDirectory = "./console/bower_components";
-            config.username = "sam";
-            config.password = "nomvc";
+            config = new Config
+            {
+                port = 5425,
+                loginKey = "abcdef0123456789",
+                adminDirectory = "./console/bower_components",
+                username = "sam",
+                password = "nomvc"
+            };
 
             this.v = "/v1";
             this.r = "app";
@@ -47,7 +55,7 @@ namespace SafeCSharp
 
             var apis = new
             {
-                login = String.Format("/%s%s/login", r, v),
+                login = $"/{r}{v}/login",
                 logout = $"/{r}{v}/logout",
                 present = $"/{r}{v}/present",
                 init = $"/{r}{v}/init",
@@ -60,8 +68,8 @@ namespace SafeCSharp
             // add SAFE's APIs
             safe.dispatcher(app, apis.dispatch);
             timeTraveler.Init(app, apis.timetravel);
-        }       
-        
+        }
+
         [HttpPost]
         public void Login(object o)
         {
@@ -83,22 +91,21 @@ namespace SafeCSharp
         }
 
         [HttpPost]
-        public void Present()
+        public void Present([FromBody] object data)
         {
-            BlogItem data = Response.Body;
             model.present(data, "representationFunc");
             /*
              * model.present(data, function(representation) {
                 res.status(200).send(representation) ;
              * */
         }
-        
+
         [HttpGet]
-        public void Init(HttpRequest req,HttpResponse res)
+        public void Init(HttpRequest req, HttpResponse res)
         {
             timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
 
-            view.Init(model);              
+            view.Init(model);
         }
 
         /*
@@ -182,6 +189,6 @@ namespace SafeCSharp
             }
 
         } ;*/
-        
+
 
 }
