@@ -6,9 +6,13 @@
 
   <ItemGroup>
     <Compile Remove="Views\**" />
+    <Compile Remove="wwwroot\original source sam-safe\**" />
     <Content Remove="Views\**" />
+    <Content Remove="wwwroot\original source sam-safe\**" />
     <EmbeddedResource Remove="Views\**" />
+    <EmbeddedResource Remove="wwwroot\original source sam-safe\**" />
     <None Remove="Views\**" />
+    <None Remove="wwwroot\original source sam-safe\**" />
   </ItemGroup>
 
   <ItemGroup>
