@@ -1,56 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http.Features;
+using System.IO;
+using HandlebarsDotNet;
+using Microsoft.AspNetCore.Hosting.Internal;
+using SamNetMvc.Helpers;
 
 namespace SamSafeCSharp.Components
 {
     public class View
     {
+        public View()
+        {
+        }
+
         //view.intents = { edit: 'edit', save: 'save', delete: 'delete', cancel: 'cancel' } ;
-        private Dictionary<string, string> Intents = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> _intents = new Dictionary<string, string>()
         {
             {"edit","edit"},
-
             {"save","save"},
-
             {"delete","delete"},
-
             {"cancel","cancel"},
         };
-            
+
         public string Init(dynamic model)
         {
             return Ready(model);
         }
-
-        public void Display(string representation, string next)
+        
+        public string Ready(Model model, Dictionary<string, string> intents = null)
         {
-            //TODO
-        }
-
-        public string Ready(dynamic model, Dictionary<string, string> intents = null)
-        {
-            string output = string.Empty;
             if (intents == null)
-                intents = Intents;
+                intents = _intents;
 
-            foreach (var post in model.Posts)
+            if (model.LastEdited == null)
             {
-                output = output + "<br><br>" +
-                         @"<div class=""mdl -cell mdl-cell--6-col"" >" +
-                         @"<h3 id=""title""> " +
-                         post.Title +
-                         "</h3>"
-                         + "<br>" +
-                         @"<p id=""description""> "
-                          + post.Description + 
-                          "</p>"
-                           + "<br>" +
-                         @"</div><br><br>";
+                // model.lastEdited = model.lastEdited || {};
             }
-            
+            var titleValue = model?.LastEdited?.Title.orDefault("Title");
+            var descriptionValue = model?.LastEdited?.Description.orDefault("Description");
+            var id = model?.LastEdited?.Id.ToString().orDefault("");
+            var cancelButton = $@"<button id=""cancel"" onclick=""JavaScript:return actions.cancel({{}});\"">Cancel</button>{Environment.NewLine}";
+            var valAttr = "value";
+            var actionLabel = "Save";
+            var idElement = $@", 'id':'{id}'";
+            if (id.IsNullOrEmpty())
+            {
+                cancelButton = ""; valAttr = "placeholder"; idElement = ""; actionLabel = "Add";
+            }
+            var output = (
+                $@"<br><br><div class=""blog-post"">{Environment.NewLine}" + model.Posts.map((e) =>
+                {
+                    return RenderHbs("post", e);
 
+                }).@join($"{Environment.NewLine}") + $@"{Environment.NewLine}</div>{Environment.NewLine}
+                <br><br>{Environment.NewLine}
+                <div class=""mdl-cell mdl-cell--6-col"">{Environment.NewLine}
+                <input id=""title"" type=""text"" class=""form-control""  {valAttr}=""{titleValue}""><br>{Environment.NewLine}
+                <input id=""description"" type=""textarea"" class=""form-control"" {valAttr}=""{descriptionValue}""><br>{Environment.NewLine}
+                <button id=""save"" onclick=""JavaScript:return actions.save({{'title':document.getElementById('title').value, 'description': document.getElementById('description').value{idElement}}});"">{actionLabel}</button>
+                {Environment.NewLine}{cancelButton}{Environment.NewLine}</div>
+                <br><br>{Environment.NewLine}");
             return output;
+
         }
+
+        public void Display(string representation, Action<string> next)
+        {
+            if (next!=null)
+            {
+                next(representation);
+            }
+            else
+            {
+                var stateRepresentation = document.getElementById("representation");
+                stateRepresentation.innerHTML = representation;
+            }
+        }
+
+        private static string RenderHbs(string templateSource, dynamic model)
+        {
+            var file = HostingEnvironment.WebRootPath($@"~/sam/demo2/templates/{templateSource}.hbs");
+            var template = Handlebars.Compile(File.ReadAllText(file));
+            var retval = template(model);
+            return retval;
+        }
+
+
     }
 }

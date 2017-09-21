@@ -1,42 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SamSafeCSharp.Components
 {
     public class Actions
     {
-        public Dictionary<string, string> Intents = new Dictionary<string, string>()
+        public readonly Dictionary<string, string> Intents = new Dictionary<string, string>()
         {
             {"edit","edit"},
-
             {"save","save"},
-
             {"delete","delete"},
-            
             {"cancel","cancel"},
         };
 
-        public void Init(string present)
+        private Func<PresenterModel, string, bool> _present;
+
+        public void Init(Func<PresenterModel, string,bool> present)
         {
-            //Method in a method? ~ W
-            //this.present = present;
+            this._present = present ?? Present;
         }
 
-        public bool Present(BlogData data, string next = null)
+        public static bool Present(PresenterModel data, string next = null)
         {
             return false;
         }
 
 
-        public bool Edit(BlogData data, string next)
+        public bool Edit(PresenterModel data, string next)
         {
-            data.LastEdited = new BlogItem { Title = data.Title, Description = data.Description, Id = data.Id };
+            data.LastEdited = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
             Present(data, next);
             return false;
         }
 
-        public bool Save(BlogData data, string next)
+        public bool Save(PresenterModel data, string next)
         {
-            data.Item = new BlogItem { Title = data.Title, Description = data.Description, Id = data.Id};
+            data.Item = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
 
             if (data.Item.Id > 0)
             {
@@ -62,9 +61,9 @@ namespace SamSafeCSharp.Components
             return dataId;
         }
 
-        public bool Cancel(BlogData data, string next)
+        public bool Cancel(PresenterModel data, string next)
         {
-            this.Present(data, next);
+            Present(data, next);
             return false;
         }
 

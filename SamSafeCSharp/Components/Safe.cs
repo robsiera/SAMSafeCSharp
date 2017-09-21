@@ -52,94 +52,93 @@ namespace SamSafeCSharp.Components
 {
     public class Safe
     {
-        private bool saveSnapshot;
-
-        public Actions actions { get; set; }
-        public Model model { get; set; }
-        public State state { get; set; }
-        public View view { get; set; }
-        public DefaultLogger logger { get; set; }
-        public defaultErrorHandler errorHandler { get; set; }
-        public defaultSessionManager sessionManager { get; set; }
-        public bool hangback { get; set; }
-        public List<Step> steps { get; set; }
-        public int stepCount { get; set; }
-        public Step lastStep { get; set; }
-        public string allowedActions { get; set; }
-        public string present { get; set; }
-        public string render { get; set; }
-        public string display { get; set; }
-        public bool blocked { get; set; }
-
+        private bool _saveSnapshot;
+        private Actions _actions;
+        private Model _model;
+        private State _state;
+        private View _view;
+        private DefaultLogger _logger;
+        private DefaultErrorHandler _errorHandler;
+        private DefaultSessionManager _sessionManager;
+        private bool _hangback;
+        private List<Step> _steps;
+        private int _stepCount;
+        private Step _lastStep;
+        private string _allowedActions;
+        private Func<PresenterModel, string, bool> _present;
+        private Action<PresenterModel, Action<string>> _render;
+        private Action<string, Action<string>> _display;
+        private bool _blocked;
+        private Func<Model, string, int> saveSnapshot;
+        private Func<int, string> getSnapshot;
+        private Func<string, string> displayTimeTravelControls;
 
 
         // SAFE Core
 
         // Insert SAFE middleware and wire SAM components
-        public void init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, defaultErrorHandler errorHandler = null, defaultSessionManager sessionManager = null)
+        public void Init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, DefaultErrorHandler errorHandler = null, DefaultSessionManager sessionManager = null)
         {
-            this.actions = actions;
-            this.model = model;
-            this.state = state;
-            this.view = view;
+            this._actions = actions;
+            this._model = model;
+            this._state = state;
+            this._view = view;
 
-            this.errorHandler = errorHandler ?? new defaultErrorHandler();
-            this.logger = logger ?? new DefaultLogger();
+            this._errorHandler = errorHandler ?? new DefaultErrorHandler();
+            this._logger = logger ?? new DefaultLogger();
 
-            this.hangback = false;
-            this.steps = new List<Step>();
-            this.stepCount = 0;
-            this.lastStep = this.newStep(this.stepCount);
+            this._hangback = false;
+            this._steps = new List<Step>();
+            this._stepCount = 0;
+            this._lastStep = this.NewStep(this._stepCount);
 
-            this.sessionManager = sessionManager ?? new defaultSessionManager();
+            this._sessionManager = sessionManager ?? new DefaultSessionManager();
 
-            this.allowedActions = null;
+            this._allowedActions = null;
 
             if (actions != null && model != null)
             {
-                actions.Init(this.present);
+                actions.Init(this._present);
             }
 
             if (state != null)
             {
                 if (model != null)
                 {
-                    model.Init(this.render);
-                    state.init(this.render, this.view);
+                    model.Init(this.Render);
+                    state.Init(this._render, this._view);
                 }
             }
             if (view != null)
             {
                 if (actions != null)
                 {
-                    state.init(null, view, this.display, actions.Intents);
+                    state.Init(null, view, this._display, actions.Intents);
                 }
                 else
                 {
-                    state.init(null, view, this.display);
+                    state.Init(null, view, this._display);
                 }
-                this.allowedActions = state.allowedActions ?? "";
+                this._allowedActions = state.AllowedActions ?? "";
             }
         }
 
-        public void initTimeTraveler(DefaultTimeTraveler timeTraveler)
+        public void InitTimeTraveler(DefaultTimeTraveler timeTraveler)
         {
             if (timeTraveler != null)
             {
-                /*
-                this.saveSnapshot = timeTraveler.saveSnapshot ?? null;
-                this.getSnapshot = timeTraveler.getSnapshot ?? null;
-                this.displayTimeTravelControls = timeTraveler.displayTimeTravelControls ?? null;
-                */
+                this.saveSnapshot = timeTraveler.SaveSnapshot;
+                this.getSnapshot = timeTraveler.GetSnapshot;
+                this.displayTimeTravelControls = timeTraveler.DisplayTimeTravelControls;
             }
         }
 
         // The Dispatcher is an optional component which 
         // exposes a dispatch API 
-        public void dispatcher(App app, string path, string next)
+        public static void Dispatcher(App app, string path, string next)
         {
             // assumes express cookie-parser middleware
-            app.post(path);
+            app.Post(path);
 
             /*JS CODE
             app.post(path, function(req, res) {
@@ -154,13 +153,14 @@ namespace SamSafeCSharp.Components
             }) ;
             */
         }
+
         // The dispatch method decides whether an action can be dispatched
         // based on SAFE's context
         public void Dispatch(Actions action, string data, string next)
         {
-            this.logger.Info("dispatcher received request");
+            this._logger.Info("dispatcher received request");
             bool dispatch = false;
-            var lastStepActions = this.lastStep.Actions;
+            var lastStepActions = this._lastStep.Actions;
 
             /*
              * safe.logger.info('dispatcher received request'+JSON.stringify(data)) ;
@@ -193,14 +193,14 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Present(BlogData data, string next)
+        public void Present(PresenterModel data, string next)
         {
             string actionId = data.ActionId ?? null;
 
-            if (!this.blocked)
+            if (!this._blocked)
             {
-                string lastStepActions = this.lastStep.Actions;
-                this.logger.Info(lastStepActions);
+                string lastStepActions = this._lastStep.Actions;
+                this._logger.Info(lastStepActions);
                 bool presentData = (lastStepActions.Length == 0);
 
                 if (!presentData)
@@ -220,14 +220,14 @@ namespace SamSafeCSharp.Components
                     if (!string.IsNullOrEmpty(data.__token))
                     {
                         //this.model.__session = this.sessionManager.rehydrateSession(data.__token); TODO
-                        this.model.__token = data.__token;
+                        this._model.__token = data.__token;
                     }
-                    if (this.saveSnapshot)
+                    if (this._saveSnapshot)
                     {
                         // Store snapshot in TimeTravel
                         //this.saveSnapshot(null, data); TODO
                     }
-                    this.model.Present(data, next);
+                    this._model.Present(data, next);
                 }
                 else
                 {
@@ -244,27 +244,27 @@ namespace SamSafeCSharp.Components
 
         public void Block()
         {
-            this.lastStep.Actions = "";
-            this.blocked = true;
+            this._lastStep.Actions = "";
+            this._blocked = true;
         }
 
-        public void unBlock()
+        public void UnBlock()
         {
-            this.blocked = false;
+            this._blocked = false;
         }
 
-        public Step newStep(int uId = 0, string allowedActions = null)
+        public Step NewStep(int uId = 0, string allowedActions = null)
         {
             allowedActions = allowedActions ?? "";
             int k = 0;
             Step step = new Step(uId, allowedActions);
 
-            this.steps.Add(step);
+            this._steps.Add(step);
             //this.logger.Info('new step        :' + JSON.stringify(step));
             return step;
         }
 
-        public void Render(BlogData model, string next, bool takeSnapshot)
+        public void Render(PresenterModel model, Action<string> next, bool takeSnapshot)
         {
             /*takeSnapShot = takeSnapShot || true;
             if (takeSnapShot && safe.saveSnapshot)
@@ -274,20 +274,20 @@ namespace SamSafeCSharp.Components
             }*/
 
             //this.allowedActions = this.state.Representation(model, next) ?? ""; TODO
-            this.unBlock();
-            this.lastStep = this.newStep(this.stepCount++, this.allowedActions);
-            this.sessionManager.dehydrateSession(model);
-            this.state.NextAction(model);
+            this.UnBlock();
+            this._lastStep = this.NewStep(this._stepCount++, this._allowedActions);
+            this._sessionManager.DehydrateSession(model);
+            this._state.NextAction(model);
         }
 
-        public void Display(string representation, string next)
+        public void Display(string representation, Action<string> next)
         {
-            /*
-            if (this.displayTimeTravelControls)
+
+            if (this.displayTimeTravelControls != null)
             {
-                representation = safe.displayTimeTravelControls(representation);
-            }*/
-            this.view.Display(representation, next);
+                representation = this.displayTimeTravelControls(representation);
+            }
+            this._view.Display(representation, next);
 
         }
 
@@ -295,31 +295,15 @@ namespace SamSafeCSharp.Components
         {
             //return JSON.parse(JSON.stringify(x));
         }
-        
+
     }
     // minimal service implementations
 
     // session manager 
-    public class defaultSessionManager
-    {
-        public void dehydrateSession(object model)
-        {
-            /*if (model.__token)
-            {
-                safe.defaultSessionManager[model.__token] = model.__session;
-            }*/
-        }
-
-        public object rehydrateSession(object token)
-        {
-            object session = token;
-            return session;
-        }
-    };
     // logger
     public class DefaultLogger
     {
-        public int loggingLevel { get; set; }
+        public int LoggingLevel { get; set; }
 
         public string Output(string level, string message)
         {
@@ -335,21 +319,21 @@ namespace SamSafeCSharp.Components
 
         public void Warning(string message)
         {
-            if (this.loggingLevel <= 1)
+            if (this.LoggingLevel <= 1)
             {
                 this.Output("[WARNING]", message);
             }
         }
         public void Info(string message)
         {
-            if (this.loggingLevel <= 0)
+            if (this.LoggingLevel <= 0)
             {
                 this.Output("[INFO]", message);
             }
         }
         public void Error(string message)
         {
-            if (this.loggingLevel <= 0)
+            if (this.LoggingLevel <= 0)
             {
                 this.Output("[ERROR]", message);
             }
@@ -357,9 +341,9 @@ namespace SamSafeCSharp.Components
 
     }
     // error handler
-    public class defaultErrorHandler
+    public class DefaultErrorHandler
     {
-        public void DefaultErrorHandler(string message)
+        public DefaultErrorHandler(string message = "")
         {
             //Default logger = logger, this = safe volgens js
             //this.logger.Error(message);
@@ -368,163 +352,39 @@ namespace SamSafeCSharp.Components
     // default in memory store for time travel 
     public class DefaultSnapshotStore
     {
-        string[] store;
+        string[] _store = new string[] { };
 
         public int Store(int i, string s)
         {
-            store[i] = s;
-            return store.Length;
+            _store[i] = s;
+            return _store.Length;
         }
 
         public string Retrieve(int i)
         {
-            if (i >= 0 && i < store.Length)
-                return store[i];
+            if (i >= 0 && i < _store.Length)
+                return _store[i];
             return null;
         }
 
         public string[] RetrieveAll()
         {
-            return store;
+            return _store;
         }
 
 
     }
     // time traveler
-    public class DefaultTimeTraveler
-    {
-        public DefaultSnapshotStore snapshotStore { get; set; }
-        public int cursor { get; set; }
-
-        /* JS code
-         *  let display =(res,representation) => {
-                res.status(200).send(representation) ;
-            } ; 
-         * */
-
-        public DefaultTimeTraveler(DefaultSnapshotStore store = null)
-        {
-            snapshotStore = store ?? new DefaultSnapshotStore();
-            cursor = -1;
-        }
-
-
-        public void Init(App app, string path, string next)
-        {
-            /*display = next || display;
-
-            // API : returns a given snapshot or all if index is negative 
-            app.get(path + '/:snapshot', function(req, res) {
-
-                let index = req.params.snapshot;
-                res.setHeader("Content-Type", "application/json");
-                display(res, JSON.stringify(safe.getSnapshot(index)));
-
-            }) ;
-
-            app.get(path, function(req, res) {
-                res.setHeader("Content-Type", "application/json");
-                display(res, JSON.stringify(safe.getSnapshot()));
-
-            }) ;
-
-            // travel back
-            app.post(path + '/:snapshot', function(req, res) {
-
-                let dis = (representation) => {
-                    let resp = res;
-                    display(resp, representation);
-                }
-
-
-                let index = req.params.snapshot;
-
-                if (index >= 0)
-                {
-                    let snapshot = snapshotStore.retrieve(index);
-                    if ((index >= 0) && (index < snapshotStore.length()))
-                    {
-                        cursor = index;
-                    }
-                    let m = safe.deepCopy(snapshot.store);
-                    m.__token = req.cookies['safe_token'] || '';
-
-                    let modelProperties = Object.getOwnPropertyNames(safe.model).filter(function(p) {
-                        return typeof safe.model[p] !== 'function';
-                    }) ;
-
-                    let snapShotProperties = Object.getOwnPropertyNames(m);
-
-                    modelProperties.forEach(function(p) {
-                        delete safe.model[p];
-                    });
-
-                    snapShotProperties.forEach(function(p) {
-                        safe.model[p] = m[p];
-                    });
-
-                    safe.render(safe.model, dis, false);
-                }
-            }) ;*/
-        }
-
-        public int SaveSnapshot(Model model, string dataset)
-        {
-            // TODO check this
-            string snapshot = snapshotStore.Retrieve(cursor);
-            //if (dataset != null)
-            //{
-            //    cursor++;
-            //    snapshot = null;
-            //    snapshot = this.DeepCopy(dataset);
-            //}
-
-            //if (model != null)
-            //    snapshot.store = this.DeepCopy(model);
-
-            return snapshotStore.Store(cursor, snapshot);
-        }
-
-        public string GetSnapshot(int i)
-        {
-            if (i == 0)
-                i = -1;
-
-            if (i >= 0)
-            {
-                return snapshotStore.Retrieve(i);
-            }
-            else
-            {
-                return snapshotStore.RetrieveAll().ToString();
-            }
-        }
-
-        public string DisplayTimeTravelControls(string representation)
-        {
-            /*JS CODE
-             * 
-             * return (representation + 
-        '          <br>\n<br>\n<hr>\n<div class="mdl-cell mdl-cell--6-col">\n'+
-        '                      <input id="__snapshot" type="text" class="form-control"><br>\n'+
-        '                      <button id="__travel" onclick="JavaScript:return travel({\'snapshot\':document.getElementById(\'__snapshot\').value});"> TimeTravel </button>\n'+
-        '          </div><br><br>\n') ;
-             * 
-             * 
-             * */
-            return null;
-        }
-    }
 
     public class Step
     {
-        public int uId { get; set; }
-        public string allowedActions { get; set; }
+        public int UId { get; set; }
+        public string AllowedActions { get; set; }
 
         public Step(int uId, string allowedActions)
         {
-            this.uId = uId;
-            this.allowedActions = allowedActions;
+            this.UId = uId;
+            this.AllowedActions = allowedActions;
         }
         public string Actions { get; set; }
     }

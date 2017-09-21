@@ -1,77 +1,66 @@
-﻿using SamSafeCSharp;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using SamSafeCSharp.Components;
 
 namespace SafeCSharp
 {
     [Route("api/[controller]")]
-    public class ServerController : Controller
+    public class SamSafeController : Controller
     {
-        public Safe safe { get; set; }
-        public Actions action { get; } // not implemented on the server
-        public Model model { get; }
-        public State state { get; }
-        public View view { get; }
-        public Config config { get; set; }
-        public string[] serverResponses { get; set; }
-        public string v { get; set; }
-        public string r { get; set; }
-        public string d { get; set; }
-        public string a { get; set; }
-        public DefaultTimeTraveler timeTraveler { get; }
+        private Safe Safe { get; }
+        private Actions Action { get; } // not implemented on the server
+        private Model Model { get; }
+        private State State { get; }
+        private View SamView { get; }
+        private Config Config { get; }
+        public string[] ServerResponses { get; set; }
 
-        public ServerController()
+        public DefaultTimeTraveler TimeTraveler { get; }
+
+        public SamSafeController()
         {
-            this.action = new Actions();
-            this.model = new Model();
-            this.state = new State();
-            this.view = new View();
+            this.Action = new Actions();
+            this.Model = new Model();
+            this.State = new State();
+            this.SamView = new View();
 
-            this.safe = new Safe();
-            safe.init(action, model, state, view);
+            this.Safe = new Safe();
+            Safe.Init(Action, Model, State, SamView);
 
             // use default time traveler
-            timeTraveler = new DefaultTimeTraveler();
-            safe.initTimeTraveler(timeTraveler);
+            TimeTraveler = new DefaultTimeTraveler();
+            Safe.InitTimeTraveler(TimeTraveler);
 
-            config = new Config
+            Config = new Config
             {
-                port = 5425,
-                loginKey = "abcdef0123456789",
-                adminDirectory = "./console/bower_components",
-                username = "sam",
-                password = "nomvc"
+                Port = 5425,
+                LoginKey = "abcdef0123456789",
+                AdminDirectory = "./console/bower_components",
+                Username = "sam",
+                Password = "nomvc"
             };
 
-            this.v = "/v1";
-            this.r = "app";
-            this.d = "dev";
-            this.a = "api";
+            var R = "api";
+            var V = "/samsafe";
+            var D = "dev";
 
             var apis = new
             {
-                login = $"/{r}{v}/login",
-                logout = $"/{r}{v}/logout",
-                present = $"/{r}{v}/present",
-                init = $"/{r}{v}/init",
-                dispatch = $"/{r}{v}/dispatch",
-                timetravel = $"/{d}{v}/timetravel/snapshots"
+                login = $"/{R}{V}/login",
+                logout = $"/{R}{V}/logout",
+                present = $"/{R}{V}/present",
+                init = $"/{R}{V}/init",
+                dispatch = $"/{R}{V}/dispatch",
+                timetravel = $"/{D}{V}/timetravel/snapshots"
             };
 
             var app = new App();
 
             // add SAFE's APIs
-            safe.dispatcher(app, apis.dispatch, "");
-            timeTraveler.Init(app, apis.timetravel, "");
+            Safe.Dispatcher(app, apis.dispatch, "");
+            TimeTraveler.Init(app, apis.timetravel, "");
         }
 
-      
+
         [HttpPost]
         public void Login(object o)
         {
@@ -96,8 +85,8 @@ namespace SafeCSharp
         [HttpPost]
         public void Present([FromBody] dynamic data)
         {
-            
-            model.Present((BlogData)data, "representationFunc");
+
+            Model.Present((PresenterModel)data, "representationFunc");
             /*
              * model.present(data, function(representation) {
                 res.status(200).send(representation) ;
@@ -110,35 +99,26 @@ namespace SafeCSharp
 
             //timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
 
-            return view.Init(model);
+            return SamView.Init(Model);
         }
-
-        /*
-         * // start application 
-
-        app.listen(config.port, function() {
-            console.log("registering app on port: "+config.port) ;
-            //setTimeout(register(),2000) ; 
-        });
-        */
 
 
     }
 
     public interface IAutorizor
     {
-        void validateCredentials(string username, string password);
+        void ValidateCredentials(string username, string password);
 
-        void del(string res, string req, string status);
+        void Del(string res, string req, string status);
     }
 
     public class Config
     {
-        public int port { get; set; }
-        public string loginKey { get; set; }
-        public string adminDirectory { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
+        public int Port { get; set; }
+        public string LoginKey { get; set; }
+        public string AdminDirectory { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 
 

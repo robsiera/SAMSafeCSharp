@@ -1,27 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 
 namespace SamSafeCSharp.Components
 {
     public class Model
     {
-        public string __token { get; set; }
-        public string __session { get; set; }
-
-        //public string render { get; set; }
-        //public int itemId { get; set; }
-        //public State state { get; set; }
-
-        public List<BlogItem> Posts = new List<BlogItem>()
+        public readonly List<BlogPost> Posts = new List<BlogPost>()
         {
-            new BlogItem()
+            new BlogPost()
             {
                 Id = 1,
                 Title = "The SAM Pattern",
                 Description = "SAM is a new reactive/functional pattern that simplifies Front-End architectures by clearly separating the business logic from the view and, in particular, strictly decoupling back-end APIs from the Front-End. SAM is technology independent and as such can be used to build Web Apps or Native Apps"
             },
-            new BlogItem()
+            new BlogPost()
             {
                 Id = 2,
                 Title = "Why I no longer use MVC Frameworks",
@@ -29,20 +22,16 @@ namespace SamSafeCSharp.Components
             }
         };
 
-        public BlogItem LastDeleted { get; set; }
-
-        public BlogItem LastEdited { get; set; }
-
-        public void Init(string render)
+        public void Init(Action<PresenterModel, Action<string>, bool> render)
         {
-            //this.render = render; // Method in a method
+            this.Render = render; 
         }
 
-        public void Present (BlogData data, string next)
+        public void Present(PresenterModel data, string next)
         {
-            if ( data == null )
+            if (data == null)
             {
-                data = new BlogData(); //Implementation
+                data = new PresenterModel(); //Implementation
             }
 
             if (data.DeletedItemId != 0)
@@ -55,7 +44,7 @@ namespace SamSafeCSharp.Components
                         d = post.Id;
                 }
 
-                if(d > 0)
+                if (d > 0)
                     LastDeleted = Posts.ElementAt(d);
             }
 
@@ -87,7 +76,7 @@ namespace SamSafeCSharp.Components
                 else
                 {
                     // new item
-                    data.Item.Id = Posts.Max(x => x.Id) + 1; 
+                    data.Item.Id = Posts.Max(x => x.Id) + 1;
                     Posts.Add(data.Item);
                 }
             }
@@ -98,5 +87,19 @@ namespace SamSafeCSharp.Components
             //model.render(model, next);
 
         }
-    }
+
+
+
+        public string __token { get; set; }
+        public string __session { get; set; }
+
+        public Action<PresenterModel, Action<string>, bool> Render { get; set; }
+        public int ItemId { get; set; }
+        public State State { get; set; }
+        
+        public BlogPost LastDeleted { get; set; }
+
+        public BlogPost LastEdited { get; set; }
+
+}
 }

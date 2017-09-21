@@ -2,7 +2,7 @@
 {
     public class App
     {
-        public void post(string path)
+        public void Post(string path)
         {
 
         }

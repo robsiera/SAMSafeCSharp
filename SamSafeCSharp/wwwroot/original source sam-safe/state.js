@@ -69,6 +69,7 @@ state.ready = function(model) {
 
 state.nextAction = function(model) {} ;
 
+
 state.render = function(model,next) {
     console.log('in render') ;
     state.representation(model,next) ;
