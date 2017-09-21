@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SamSafeCSharp.Components;
 
 namespace SafeCSharp
@@ -25,14 +26,14 @@ namespace SafeCSharp
         public string a { get; set; }
         public DefaultTimeTraveler timeTraveler { get; }
 
-        public ServerController(Actions action, Model model, State state, View view)
+        public ServerController()
         {
-            this.action = action;
-            this.model = model;
-            this.state = state;
-            this.view = view;
+            this.action = new Actions();
+            this.model = new Model();
+            this.state = new State();
+            this.view = new View();
 
-            this.safe=new Safe();
+            this.safe = new Safe();
             safe.init(action, model, state, view);
 
             // use default time traveler
@@ -66,46 +67,50 @@ namespace SafeCSharp
             var app = new App();
 
             // add SAFE's APIs
-            safe.dispatcher(app, apis.dispatch);
-            timeTraveler.Init(app, apis.timetravel);
+            safe.dispatcher(app, apis.dispatch, "");
+            timeTraveler.Init(app, apis.timetravel, "");
         }
 
+      
         [HttpPost]
         public void Login(object o)
         {
-            string username = o.username;
-            string password = o.password;
-            if (IAutorizor.validateCredentials(username, password))
-            {
-                //   return true;
-            }
-            else
-                throw new Exception("unknow user");
+            //TODO : create user model class 
+            //string username = o.username;
+            //string password = o.password;
+            //if (IAutorizor.validateCredentials(username, password))
+            //{
+            //    //   return true;
+            //}
+            //else
+            //    throw new Exception("unknow user");
         }
 
-        [HttpGet]
+        [HttpPost]
         public bool Logout(object o)
         {
-            IAutorizor.del(Request, Response, "authorized");
+            //IAutorizor.del(Request, Response, "authorized");
             return false;
         }
 
         [HttpPost]
-        public void Present([FromBody] object data)
+        public void Present([FromBody] dynamic data)
         {
-            model.present(data, "representationFunc");
+            
+            model.Present((BlogData)data, "representationFunc");
             /*
              * model.present(data, function(representation) {
                 res.status(200).send(representation) ;
              * */
         }
 
-        [HttpGet]
-        public void Init(HttpRequest req, HttpResponse res)
+        [HttpGet("init")]
+        public string Init()
         {
-            timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
 
-            view.Init(model);
+            //timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
+
+            return view.Init(model);
         }
 
         /*

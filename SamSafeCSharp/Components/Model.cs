@@ -1,74 +1,102 @@
-﻿namespace SamSafeCSharp.Components
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+
+namespace SamSafeCSharp.Components
 {
     public class Model
     {
         public string __token { get; set; }
         public string __session { get; set; }
-        public string render { get; set; }
-        public string posts { get; set; } // to be implemented into a model
-        public string lastDeleted { get; set; }
-        public string lastEdited { get; set; }
-        public int itemId { get; set; }
-        public SafeCSharp.State state { get; set; }
-        
 
-        public void init(string render)
+        //public string render { get; set; }
+        //public int itemId { get; set; }
+        //public State state { get; set; }
+
+        public List<BlogItem> Posts = new List<BlogItem>()
         {
-            this.render = render; // Method in a method
+            new BlogItem()
+            {
+                Id = 1,
+                Title = "The SAM Pattern",
+                Description = "SAM is a new reactive/functional pattern that simplifies Front-End architectures by clearly separating the business logic from the view and, in particular, strictly decoupling back-end APIs from the Front-End. SAM is technology independent and as such can be used to build Web Apps or Native Apps"
+            },
+            new BlogItem()
+            {
+                Id = 2,
+                Title = "Why I no longer use MVC Frameworks",
+                Description = "The worst part of my job these days is designing APIs for front-end developers."
+            }
+        };
+
+        public BlogItem LastDeleted { get; set; }
+
+        public BlogItem LastEdited { get; set; }
+
+        public void Init(string render)
+        {
+            //this.render = render; // Method in a method
         }
 
-        public void present(BlogItem data, string next)
+        public void Present (BlogData data, string next)
         {
-            if(data == null)
+            if ( data == null )
             {
-                data = new BlogItem(); //Implementation
+                data = new BlogData(); //Implementation
             }
 
-            //Present logic
-            int index = -1;
-            int d = -1 ;
-            foreach (var item in this.posts)
+            if (data.DeletedItemId != 0)
             {
-                index += 1;
-                if (el.id == data.deletedItemId)
+                var d = -1;
+
+                foreach (var post in Posts)
                 {
-                    d = index;
+                    if (post.Id != 0 && post.Id == data.DeletedItemId)
+                        d = post.Id;
                 }
-            }            
-            if (d>=0) {
-                this.lastDeleted = this.posts[d].ToString();
+
+                if(d > 0)
+                    LastDeleted = Posts.ElementAt(d);
             }
 
-            if (data?.lastEdited != null)
+
+            if (data.LastEdited != null)
             {
-                this.lastEdited = data.lastEdited;
+                LastEdited = data.LastEdited;
             }
             else
             {
-                this.lastEdited = null;
+                // delete model.lastEdited; TODO check 
             }
 
-            if(data?.item != null)
+            if (data.Item != null)
             {
-                if(data.item.id > 0)
+
+                if (data.Item.Id > 0)
                 {
-                    var index = 0;
-                    foreach(var el in this.posts)
+                    // item has been edited
+                    var indexer = 0;
+                    foreach (var post in Posts)
                     {
-                        if(el.id == data.item.id)
-                        {
-                            this.posts[] = data.item;
-                        }
+                        if (post.Id > 0 && post.Id == data.Item.Id)
+                            Posts[indexer] = data.Item;
+
+                        indexer = indexer + 1;
                     }
                 }
                 else
                 {
-                    data.item.id = this.itemId++;
-                    this.posts += data.item;
-
+                    // new item
+                    data.Item.Id = Posts.Max(x => x.Id) + 1; 
+                    Posts.Add(data.Item);
                 }
             }
-            state.Render(this, next);
+
+            // TODO: Check how to render model...
+            //console.log(model);
+
+            //model.render(model, next);
+
         }
     }
 }

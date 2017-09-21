@@ -1,33 +1,44 @@
-﻿namespace SamSafeCSharp.Components
+﻿using System.Collections.Generic;
+
+namespace SamSafeCSharp.Components
 {
     public class Actions
     {
-        public string intents { get; set; }
+        public Dictionary<string, string> Intents = new Dictionary<string, string>()
+        {
+            {"edit","edit"},
 
-        public void init(string present)
+            {"save","save"},
+
+            {"delete","delete"},
+            
+            {"cancel","cancel"},
+        };
+
+        public void Init(string present)
         {
             //Method in a method? ~ W
             //this.present = present;
-            var intents = new { edit = "edit", save = "save", delete = "delete", cancel = "cancel" };
         }
 
-        public bool Present(BlogItem data, string next = null)
+        public bool Present(BlogData data, string next = null)
         {
             return false;
         }
 
 
-        public bool Edit(BlogItem data, string next)
+        public bool Edit(BlogData data, string next)
         {
-            data.lastEdited = new BlogItem { title = data.title, description = data.description, id = data.id };
+            data.LastEdited = new BlogItem { Title = data.Title, Description = data.Description, Id = data.Id };
             Present(data, next);
             return false;
         }
 
-        public bool Save(BlogItem data, string next)
+        public bool Save(BlogData data, string next)
         {
-            data.item = new BlogItem { title = data.title, description = data.description, id = EmptyifNull(data.id) };
-            if (data.item.id != "")
+            data.Item = new BlogItem { Title = data.Title, Description = data.Description, Id = data.Id};
+
+            if (data.Item.Id > 0)
             {
                 // simulate a slow save after
                 // editing an item
@@ -40,7 +51,7 @@
             else
             {
                 // proceed as normal when created a new item
-                this.Present(data, next);
+                Present(data, next);
             }
             return false;
         }
@@ -51,7 +62,7 @@
             return dataId;
         }
 
-        public bool Cancel(BlogItem data, string next)
+        public bool Cancel(BlogData data, string next)
         {
             this.Present(data, next);
             return false;

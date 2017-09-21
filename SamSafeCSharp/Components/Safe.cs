@@ -52,6 +52,8 @@ namespace SamSafeCSharp.Components
 {
     public class Safe
     {
+        private bool saveSnapshot;
+
         public Actions actions { get; set; }
         public Model model { get; set; }
         public State state { get; set; }
@@ -95,14 +97,14 @@ namespace SamSafeCSharp.Components
 
             if (actions != null && model != null)
             {
-                actions.init(this.present);
+                actions.Init(this.present);
             }
 
             if (state != null)
             {
                 if (model != null)
                 {
-                    model.init(this.render);
+                    model.Init(this.render);
                     state.init(this.render, this.view);
                 }
             }
@@ -110,7 +112,7 @@ namespace SamSafeCSharp.Components
             {
                 if (actions != null)
                 {
-                    state.init(null, view, this.display, actions.intents);
+                    state.init(null, view, this.display, actions.Intents);
                 }
                 else
                 {
@@ -191,9 +193,9 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Present(BlogItem data, string next)
+        public void Present(BlogData data, string next)
         {
-            string actionId = data.actionId ?? null;
+            string actionId = data.ActionId ?? null;
 
             if (!this.blocked)
             {
@@ -206,26 +208,26 @@ namespace SamSafeCSharp.Components
                     // are we expecting that action?
                     foreach (var item in lastStepActions)
                     {
-                        if (item.uid == actionId)
-                        {
-                            presentData = true;
-                        }
+                        //if (item.Id == actionId) TODO
+                        //{
+                        //    presentData = true;
+                        //}
                     }
                 }
                 if (presentData)
                 {
                     Block();
-                    if (data.__token)
+                    if (!string.IsNullOrEmpty(data.__token))
                     {
-                        this.model.__session = this.sessionManager.rehydrateSession(data.__token);
-                        this.model.__token = data._token;
+                        //this.model.__session = this.sessionManager.rehydrateSession(data.__token); TODO
+                        this.model.__token = data.__token;
                     }
                     if (this.saveSnapshot)
                     {
                         // Store snapshot in TimeTravel
-                        this.saveSnapshot(null, data);
+                        //this.saveSnapshot(null, data); TODO
                     }
-                    this.model.present(data, next);
+                    this.model.Present(data, next);
                 }
                 else
                 {
@@ -245,6 +247,7 @@ namespace SamSafeCSharp.Components
             this.lastStep.Actions = "";
             this.blocked = true;
         }
+
         public void unBlock()
         {
             this.blocked = false;
@@ -261,7 +264,7 @@ namespace SamSafeCSharp.Components
             return step;
         }
 
-        public void Render(Model model, string next, bool takeSnapshot)
+        public void Render(BlogData model, string next, bool takeSnapshot)
         {
             /*takeSnapShot = takeSnapShot || true;
             if (takeSnapShot && safe.saveSnapshot)
@@ -270,7 +273,7 @@ namespace SamSafeCSharp.Components
                 safe.saveSnapshot(model, null);
             }*/
 
-            this.allowedActions = this.state.Representation(model, next) ?? "";
+            //this.allowedActions = this.state.Representation(model, next) ?? ""; TODO
             this.unBlock();
             this.lastStep = this.newStep(this.stepCount++, this.allowedActions);
             this.sessionManager.dehydrateSession(model);
@@ -467,16 +470,17 @@ namespace SamSafeCSharp.Components
 
         public int SaveSnapshot(Model model, string dataset)
         {
+            // TODO check this
             string snapshot = snapshotStore.Retrieve(cursor);
-            if (dataset != null)
-            {
-                cursor++;
-                snapshot = null;
-                snapshot = this.DeepCopy(dataset);
-            }
+            //if (dataset != null)
+            //{
+            //    cursor++;
+            //    snapshot = null;
+            //    snapshot = this.DeepCopy(dataset);
+            //}
 
-            if (model != null)
-                snapshot.store = this.DeepCopy(model);
+            //if (model != null)
+            //    snapshot.store = this.DeepCopy(model);
 
             return snapshotStore.Store(cursor, snapshot);
         }
@@ -508,27 +512,6 @@ namespace SamSafeCSharp.Components
              * 
              * 
              * */
-            return null;
-        }
-    }
-
-    
-
-
-    public class View
-    {
-        public void Init(Model model)
-        {
-
-        }
-
-        public void Display(string representation, string next)
-        {
-
-        }
-
-        public string Ready(Model model, string intents)
-        {
             return null;
         }
     }
