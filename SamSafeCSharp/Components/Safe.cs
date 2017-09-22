@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
 
 
 // /////////////////////////////////////////////////////////////////
@@ -64,9 +65,9 @@ namespace SamSafeCSharp.Components
         private List<Step> _steps;
         private int _stepCount;
         private Step _lastStep;
-        private string _allowedActions;
+        private string[] _allowedActions;
         private Func<PresenterModel, string, bool> _present;
-        private Action<PresenterModel, Action<string>> _render;
+        private Action<Model, Action<string>> _render;
         private Action<string, Action<string>> _display;
         private bool _blocked;
         private Func<Model, string, int> saveSnapshot;
@@ -119,7 +120,7 @@ namespace SamSafeCSharp.Components
                 {
                     state.Init(null, view, this._display);
                 }
-                this._allowedActions = state.AllowedActions ?? "";
+                this._allowedActions = state.AllowedActions ?? new string[]{};
             }
         }
 
@@ -253,9 +254,9 @@ namespace SamSafeCSharp.Components
             this._blocked = false;
         }
 
-        public Step NewStep(int uId = 0, string allowedActions = null)
+        public Step NewStep(int uId = 0, string[] allowedActions = null)
         {
-            allowedActions = allowedActions ?? "";
+            _allowedActions = allowedActions ?? new string[] { };
             int k = 0;
             Step step = new Step(uId, allowedActions);
 
@@ -264,8 +265,9 @@ namespace SamSafeCSharp.Components
             return step;
         }
 
-        public void Render(PresenterModel model, Action<string> next, bool takeSnapshot)
+        public void Render(Model model, Action<string> next, bool takeSnapshot)
         {
+            //todo check next lines
             /*takeSnapShot = takeSnapShot || true;
             if (takeSnapShot && safe.saveSnapshot)
             {
@@ -273,7 +275,7 @@ namespace SamSafeCSharp.Components
                 safe.saveSnapshot(model, null);
             }*/
 
-            //this.allowedActions = this.state.Representation(model, next) ?? ""; TODO
+            this._allowedActions = this._state.Representation(model, next);
             this.UnBlock();
             this._lastStep = this.NewStep(this._stepCount++, this._allowedActions);
             this._sessionManager.DehydrateSession(model);
@@ -371,17 +373,15 @@ namespace SamSafeCSharp.Components
         {
             return _store;
         }
-
-
     }
-    // time traveler
 
+    // time traveler
     public class Step
     {
         public int UId { get; set; }
-        public string AllowedActions { get; set; }
+        public string[] AllowedActions { get; set; }
 
-        public Step(int uId, string allowedActions)
+        public Step(int uId, string[] allowedActions)
         {
             this.UId = uId;
             this.AllowedActions = allowedActions;

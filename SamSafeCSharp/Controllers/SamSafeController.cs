@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SamSafeCSharp.Components;
 
 namespace SafeCSharp
@@ -16,13 +17,15 @@ namespace SafeCSharp
 
         public DefaultTimeTraveler TimeTraveler { get; }
 
-        public SamSafeController()
+        public SamSafeController(IHostingEnvironment hostingEnvironment)
         {
+
             this.Action = new Actions();
             this.Model = new Model();
             this.State = new State();
             this.SamView = new View();
 
+            TemplateRenderingService.Init(hostingEnvironment);
             this.Safe = new Safe();
             Safe.Init(Action, Model, State, SamView);
 
@@ -87,6 +90,7 @@ namespace SafeCSharp
         {
 
             Model.Present((PresenterModel)data, "representationFunc");
+            //todo check next line
             /*
              * model.present(data, function(representation) {
                 res.status(200).send(representation) ;
@@ -96,7 +100,7 @@ namespace SafeCSharp
         [HttpGet("init")]
         public string Init()
         {
-
+            //todo check next line
             //timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
 
             return SamView.Init(Model);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using HandlebarsDotNet;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -26,7 +27,7 @@ namespace SamSafeCSharp.Components
         {
             return Ready(model);
         }
-        
+
         public string Ready(Model model, Dictionary<string, string> intents = null)
         {
             if (intents == null)
@@ -50,7 +51,7 @@ namespace SamSafeCSharp.Components
             var output = (
                 $@"<br><br><div class=""blog-post"">{Environment.NewLine}" + model.Posts.map((e) =>
                 {
-                    return RenderHbs("post", e);
+                    return TemplateRenderingService.Instance.RenderHbs("post", e);
 
                 }).@join($"{Environment.NewLine}") + $@"{Environment.NewLine}</div>{Environment.NewLine}
                 <br><br>{Environment.NewLine}
@@ -66,25 +67,17 @@ namespace SamSafeCSharp.Components
 
         public void Display(string representation, Action<string> next)
         {
-            if (next!=null)
+            if (next != null)
             {
                 next(representation);
             }
             else
             {
-                var stateRepresentation = document.getElementById("representation");
-                stateRepresentation.innerHTML = representation;
+                Debugger.Break();
+                //todo uncomment and fix
+                //var stateRepresentation = document.getElementById("representation");
+                //stateRepresentation.innerHTML = representation;
             }
         }
-
-        private static string RenderHbs(string templateSource, dynamic model)
-        {
-            var file = HostingEnvironment.WebRootPath($@"~/sam/demo2/templates/{templateSource}.hbs");
-            var template = Handlebars.Compile(File.ReadAllText(file));
-            var retval = template(model);
-            return retval;
-        }
-
-
     }
 }

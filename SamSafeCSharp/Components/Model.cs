@@ -22,7 +22,7 @@ namespace SamSafeCSharp.Components
             }
         };
 
-        public void Init(Action<PresenterModel, Action<string>, bool> render)
+        public void Init(Action<Model, Action<string>, bool> render)
         {
             this.Render = render; 
         }
@@ -93,7 +93,7 @@ namespace SamSafeCSharp.Components
         public string __token { get; set; }
         public string __session { get; set; }
 
-        public Action<PresenterModel, Action<string>, bool> Render { get; set; }
+        public Action<Model, Action<string>, bool> Render { get; set; }
         public int ItemId { get; set; }
         public State State { get; set; }
         
