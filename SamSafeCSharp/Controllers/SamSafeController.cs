@@ -1,6 +1,8 @@
 ﻿using System;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using SamSafeCSharp.Components;
 using SamSafeCSharp.Helpers;
 
@@ -33,8 +35,11 @@ namespace SafeCSharp
             _safe.Init(_actions, _model, _state, _samView);
 
             // use default time traveler
-            _timeTraveler = new DefaultTimeTraveler();
-            _safe.InitTimeTraveler(_timeTraveler);
+            if (true == false) // change this to enable timetraveling
+            {
+                _timeTraveler = new DefaultTimeTraveler();
+                _safe.InitTimeTraveler(_timeTraveler);
+            }
 
             _config = new Config
             {
@@ -59,11 +64,8 @@ namespace SafeCSharp
                 timetravel = $"/{d}{v}/timetravel/snapshots"
             };
 
-            var app = new App();
-
             // add SAFE's APIs
-            Safe.Dispatcher(app, apis.dispatch, null);
-            _timeTraveler.Init(app, apis.timetravel, null);
+            _timeTraveler?.Init(apis.timetravel, null);
         }
 
 
@@ -108,13 +110,14 @@ namespace SafeCSharp
         [HttpGet("init")]
         public string Init()
         {
-            _timeTraveler.SaveSnapshot(_model, "");
+            _timeTraveler?.SaveSnapshot(_model, "");
             return _samView.Init(_model);
         }
 
-        [HttpGet("dispatch")]
-        public string Dispatch([FromBody] dynamic data)
+        [HttpPost("dispatch")]
+        public string Dispatch([FromBody] dynamic reqdata)
         {
+            dynamic data = reqdata;
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
             data.__token = safeToken;
 

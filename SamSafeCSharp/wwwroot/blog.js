@@ -187,7 +187,7 @@ state.render = function (model, next) {
 // Actions
 //
 
-//var actions = {};
+var actions = {};
 
 actions.handle = function (data) {
     // default action handler.

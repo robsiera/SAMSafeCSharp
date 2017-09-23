@@ -1,11 +1,14 @@
-﻿namespace SamSafeCSharp.Components
+﻿using SamSafeCSharp.Helpers;
+
+namespace SamSafeCSharp.Components
 {
     public class DefaultTimeTraveler
     {
         private readonly DefaultSnapshotStore _snapshotStore;
         private readonly int _cursor;
 
-        /* JS code
+        //todo
+        /* JS code 
          *  let display =(res,representation) => {
                 res.status(200).send(representation) ;
             } ; 
@@ -18,10 +21,9 @@
         }
 
 
-        public void Init(App app, string path, string next)
+        public void Init(string path, string next)
         {
             //todo 
-
             /*display = next || display;
 
             // API : returns a given snapshot or all if index is negative 
@@ -82,16 +84,17 @@
         public int SaveSnapshot(Model model, string dataset)
         {
             // TODO check this
-            string snapshot = _snapshotStore.Retrieve(_cursor);
-            //if (dataset != null)
-            //{
-            //    cursor++;
-            //    snapshot = null;
-            //    snapshot = this.DeepCopy(dataset);
-            //}
+            dynamic snapshot = _snapshotStore.Retrieve(_cursor);
+            var cursor =0;
+            if (dataset != null)
+            {
+                cursor = cursor +1;
+                snapshot = null;
+                snapshot = JsHelpers.DeepCopy(dataset);
+            }
 
-            //if (model != null)
-            //    snapshot.store = this.DeepCopy(model);
+            if (model != null)
+                snapshot.store = JsHelpers.DeepCopy(model);
 
             return _snapshotStore.Store(_cursor, snapshot);
         }

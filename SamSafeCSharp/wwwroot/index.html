@@ -106,7 +106,7 @@
             //model.present(data) ;
 
             // server side
-            $.post(endpoint + "/app/samsafe/dispatch", data)
+            $.post(endpoint + "/api/samsafe/dispatch", data)
                 .done(function (representation) {
                     $("#representation").html(representation);
                 }
@@ -118,7 +118,7 @@
             //model.present(data) ;
 
             // server side
-            $.post(endpoint + "/app/samsafe/present", data)
+            $.post(endpoint + "/api/samsafe/present", data)
                 .done(function (representation) {
                     $("#representation").html(representation);
                 }

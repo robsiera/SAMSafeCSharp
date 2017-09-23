@@ -6,12 +6,16 @@
 
   <ItemGroup>
     <Compile Remove="Views\**" />
+    <Compile Remove="wwwroot\images\**" />
     <Compile Remove="wwwroot\original source sam-safe\**" />
     <Content Remove="Views\**" />
+    <Content Remove="wwwroot\images\**" />
     <Content Remove="wwwroot\original source sam-safe\**" />
     <EmbeddedResource Remove="Views\**" />
+    <EmbeddedResource Remove="wwwroot\images\**" />
     <EmbeddedResource Remove="wwwroot\original source sam-safe\**" />
     <None Remove="Views\**" />
+    <None Remove="wwwroot\images\**" />
     <None Remove="wwwroot\original source sam-safe\**" />
   </ItemGroup>
 
@@ -40,8 +44,6 @@
 
   <ItemGroup>
     <Folder Include="Views\" />
-    <Folder Include="wwwroot\images\" />
-    <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
 </Project>

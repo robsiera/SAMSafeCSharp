@@ -1,10 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SamSafeCSharp.Components;
 
-namespace SamNetMvc.Helpers
+namespace SamSafeCSharp.Helpers
 {
     public static class JsHelpers
     {
+        public static  class JSON
+        {
+            public static string stringify(object obj)
+            {
+                //todo: implement serialize to string
+                return JsonConvert.SerializeObject(obj);
+            }
+        }
+
+        public static JToken DeepCopy(string x)
+        {
+            return JToken.Parse(JsHelpers.JSON.stringify(x));
+        }
+        public static object DeepCopy(Model x)
+        {
+            return JToken.Parse(JsHelpers.JSON.stringify(x));
+        }
+
         public static List<string> map<T>(this List<T> list, Func<T, string> func)
         {
             var retval = new List<string>();
@@ -38,5 +59,7 @@ namespace SamNetMvc.Helpers
         {
             return string.IsNullOrEmpty(value);
         }
+
+       
     }
 }

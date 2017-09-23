@@ -199,13 +199,13 @@ actions.edit = (data) => {
 actions.save = (data) => {
     // data.item = {title: data.title, description: data.description, id: data.id || null} ;
     data.__action = 'save' ;
-    actions.do(data) ; 
+    actions.handle(data) ; 
     return false ;
 } ;
 
 actions.delete = (data) => {
     data.__action = 'delete' ;
-    actions.do(data) ;
+    actions.handle(data) ;
     return false ;
 } ;
 

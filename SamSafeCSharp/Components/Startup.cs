@@ -35,7 +35,18 @@ namespace SamSafeCSharp.Components
 			app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "api/{controller=SamSafe}/{action}");
+            });
+
+            app.UseCors(builder => builder
+                .AllowCredentials()
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
         }
     }
 }

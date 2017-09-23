@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using SamSafeCSharp.Helpers;
 
 
 // /////////////////////////////////////////////////////////////////
@@ -132,27 +133,6 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        // The Dispatcher is an optional component which 
-        // exposes a dispatch API 
-        public static void Dispatcher(App app, string path, Action<string> next)
-        {
-            // assumes express cookie-parser middleware
-            app.Post(path);
-
-            //todo
-            /*JS CODE
-            app.post(path, function(req, res) {
-                var ret = (representation) => {
-                    res.status(200).send(representation);
-                };
-                var data = req.body;
-
-                data.__token = req.cookies['safe_token'] || '';
-
-                safe.dispatch(data.__action, data, next || ret);
-            }) ;
-            */
-        }
 
         // The dispatch method decides whether an action can be dispatched
         // based on SAFE's context
@@ -162,11 +142,9 @@ namespace SamSafeCSharp.Components
             bool dispatch = false;
             var lastStepActions = this._lastStep.Actions;
 
-            /*
-             * safe.logger.info('dispatcher received request'+JSON.stringify(data)) ;
-                safe.logger.info('lastStepActions            '+JSON.stringify(lastStepActions)) ;
-             * 
-             * */
+            this._logger.Info("dispatcher received request" + JsHelpers.JSON.stringify(data));
+            this._logger.Info("lastStepActions            " + JsHelpers.JSON.stringify(lastStepActions));
+
 
             if (lastStepActions.Count == 0)
             {
@@ -276,11 +254,10 @@ namespace SamSafeCSharp.Components
         public Step NewStep(int uId = 0, string[] allowedActions = null)
         {
             _allowedActions = allowedActions ?? new string[] { };
-            int k = 0;
             Step step = new Step(uId, allowedActions);
 
             this._steps.Add(step);
-            //this.logger.Info('new step        :' + JSON.stringify(step));
+            this._logger.Info("new step        :" + JsHelpers.JSON.stringify(step));
             return step;
         }
 
@@ -317,18 +294,10 @@ namespace SamSafeCSharp.Components
 
         }
 
-        public void DeepCopy(string x)
-        {
-            //todo
-            //return JSON.parse(JSON.stringify(x));
-        }
-
         public void DefaultErrorHandler(string message = "")
         {
 
-            //todo
-            //Default logger = logger, this = safe volgens js
-            //this.logger.Error(message);
+            this._logger.Error(message);
         }
     }
 
@@ -341,7 +310,7 @@ namespace SamSafeCSharp.Components
     // default in memory store for time travel 
     public class DefaultSnapshotStore
     {
-        string[] _store = new string[] { };
+        readonly string[] _store = new string[] { };
 
         public int Store(int i, string s)
         {
@@ -369,11 +338,13 @@ namespace SamSafeCSharp.Components
         {
             this.StepId = uId;
             this.Actions = new List<StepAction>();
-
-            var k = 0;
-            foreach (var allowedAction in allowedActions)
+            if (allowedActions != null)
             {
-                this.Actions.Add(new StepAction(uId + "_" + k++, allowedAction));
+                var k = 0;
+                foreach (var allowedAction in allowedActions)
+                {
+                    this.Actions.Add(new StepAction(uId + "_" + k++, allowedAction));
+                }
             }
         }
         public int StepId { get; set; }
