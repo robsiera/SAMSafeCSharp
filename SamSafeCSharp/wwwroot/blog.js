@@ -178,7 +178,7 @@ state.ready = function(model) {
 state.nextAction = function(model) {} ;
 
 state.render = function(model,next) {
-    state.representation(model,next)
+    state.representation(model, next) ;
     state.nextAction(model) ;
 } ;
 
@@ -211,7 +211,7 @@ actions.delete = (data) => {
 
 actions.cancel = (data) => {
     data = data || {} ;
-    data.__action = 'cancel'
+    data.__action = 'cancel' ;
     actions.do(data) ;
     return false ;
 } ;

@@ -164,12 +164,12 @@ safe.defaultTimeTraveler = (store) => {
             }) ;
             
             // travel back
-            app.post(path+'/:snapshot', function(req,res) { 
-                
+            app.post(path+'/:snapshot', function(req,res) {
+
                 let dis = (representation) => {
-                    let resp = res ;
-                    display(resp,representation) ;
-                }
+                    let resp = res;
+                    display(resp, representation);
+                };
                 
                 let index = req.params.snapshot ;
                 

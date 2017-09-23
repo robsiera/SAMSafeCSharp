@@ -27,7 +27,7 @@ namespace SamSafeCSharp.Components
             this.Render = render; 
         }
 
-        public void Present(PresenterModel data, string next)
+        public void Present(PresenterModel data, Action<string> next)
         {
             if (data == null)
             {
@@ -55,7 +55,7 @@ namespace SamSafeCSharp.Components
             }
             else
             {
-                // delete model.lastEdited; TODO check 
+                // delete model.lastEdited; //TODO check 
             }
 
             if (data.Item != null)
@@ -83,8 +83,7 @@ namespace SamSafeCSharp.Components
 
             // TODO: Check how to render model...
             //console.log(model);
-
-            //model.render(model, next);
+            this.Render(data, next);
 
         }
 

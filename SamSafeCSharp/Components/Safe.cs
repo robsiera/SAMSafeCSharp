@@ -194,7 +194,7 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Present(PresenterModel data, string next)
+        public void Present(PresenterModel data, Action<string> next)
         {
             string actionId = data.ActionId ?? null;
 

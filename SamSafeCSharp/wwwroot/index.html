@@ -88,50 +88,50 @@
 
 
         var endpoint = 'http://localhost:2673';
-        //function travel(data) {
-        //    // client side
-        //    //model.present(data) ;
+        function travel(data) {
+            // client side
+            //model.present(data) ;
 
-        //    // server side
-        //    $.get( endpoint+"/dev/v1/timetravel/snapshots/"+data.snapshot)
-        //        .done(function( snapshot ) {
-        //                $.post( endpoint+"/dev/v1/timetravel/snapshots/"+data.snapshot, snapshot)
-        //                    .done( function (representation) {
-        //                        $( "#representation" ).html( representation );
-        //                    })
-        //            }
-        //        );
-        //}
+            // server side
+            $.get(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot)
+                .done(function (snapshot) {
+                    $.post(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot, snapshot)
+                        .done(function (representation) {
+                            $("#representation").html(representation);
+                        });
+                }
+                );
+        }
 
-        //function dispatch(data) {
-        //    // client side
-        //    //model.present(data) ;
+        function dispatch(data) {
+            // client side
+            //model.present(data) ;
 
-        //    // server side
-        //    $.post( endpoint+"/app/v1/dispatch", data)
-        //        .done(function( representation ) {
-        //                $( "#representation" ).html( representation );
-        //            }
-        //        );
-        //}
+            // server side
+            $.post(endpoint + "/app/samsafe/dispatch", data)
+                .done(function (representation) {
+                    $("#representation").html(representation);
+                }
+                );
+        }
 
-        //function present(data) {
-        //    // client side
-        //    //model.present(data) ;
+        function present(data) {
+            // client side
+            //model.present(data) ;
 
-        //    // server side
-        //    $.post( endpoint+"/app/v1/present", data)
-        //        .done(function( representation ) {
-        //                $( "#representation" ).html( representation );
-        //            }
-        //        );
-        //}
+            // server side
+            $.post(endpoint + "/app/samsafe/present", data)
+                .done(function (representation) {
+                    $("#representation").html(representation);
+                }
+                );
+        }
 
         function init() {
             // client side
             //view.display(view.init(model)) ;
 
-            // actions.do = dispatch
+            // actions.do = dispatch  //todo: when should this be enabled? when client side?
 
             // server side
             $.get(endpoint + "/api/samsafe/init", function (data) {

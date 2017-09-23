@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SamSafeCSharp.Components;
 
@@ -7,33 +8,31 @@ namespace SafeCSharp
     [Route("api/[controller]")]
     public class SamSafeController : Controller
     {
-        private Safe Safe { get; }
-        private Actions Action { get; } // not implemented on the server
-        private Model Model { get; }
-        private State State { get; }
-        private View SamView { get; }
-        private Config Config { get; }
-        public string[] ServerResponses { get; set; }
+        private readonly Actions _action; // not implemented on the server
+        private readonly Model _model;
+        private readonly State _state;
+        private readonly View _samView;
 
-        public DefaultTimeTraveler TimeTraveler { get; }
+        private Config _config;
+        private readonly DefaultTimeTraveler _timeTraveler;
+        private string _finalRepresantion;
 
         public SamSafeController(IHostingEnvironment hostingEnvironment)
         {
-
-            this.Action = new Actions();
-            this.Model = new Model();
-            this.State = new State();
-            this.SamView = new View();
+            this._action = new Actions();
+            this._model = new Model();
+            this._state = new State();
+            this._samView = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
-            this.Safe = new Safe();
-            Safe.Init(Action, Model, State, SamView);
+            var safe = new Safe();
+            safe.Init(_action, _model, _state, _samView);
 
             // use default time traveler
-            TimeTraveler = new DefaultTimeTraveler();
-            Safe.InitTimeTraveler(TimeTraveler);
+            _timeTraveler = new DefaultTimeTraveler();
+            safe.InitTimeTraveler(_timeTraveler);
 
-            Config = new Config
+            _config = new Config
             {
                 Port = 5425,
                 LoginKey = "abcdef0123456789",
@@ -42,25 +41,25 @@ namespace SafeCSharp
                 Password = "nomvc"
             };
 
-            var R = "api";
-            var V = "/samsafe";
-            var D = "dev";
+            const string r = "api";
+            const string v = "/samsafe";
+            const string d = "dev";
 
             var apis = new
             {
-                login = $"/{R}{V}/login",
-                logout = $"/{R}{V}/logout",
-                present = $"/{R}{V}/present",
-                init = $"/{R}{V}/init",
-                dispatch = $"/{R}{V}/dispatch",
-                timetravel = $"/{D}{V}/timetravel/snapshots"
+                login = $"/{r}{v}/login",
+                logout = $"/{r}{v}/logout",
+                present = $"/{r}{v}/present",
+                init = $"/{r}{v}/init",
+                dispatch = $"/{r}{v}/dispatch",
+                timetravel = $"/{d}{v}/timetravel/snapshots"
             };
 
             var app = new App();
 
             // add SAFE's APIs
             Safe.Dispatcher(app, apis.dispatch, "");
-            TimeTraveler.Init(app, apis.timetravel, "");
+            _timeTraveler.Init(app, apis.timetravel, "");
         }
 
 
@@ -86,24 +85,27 @@ namespace SafeCSharp
         }
 
         [HttpPost]
-        public void Present([FromBody] dynamic data)
+        public string Present([FromBody] dynamic data)
         {
+            _model.Present((PresenterModel)data, PushRepresentation);
+            return _finalRepresantion;
+        }
 
-            Model.Present((PresenterModel)data, "representationFunc");
-            //todo check next line
-            /*
-             * model.present(data, function(representation) {
-                res.status(200).send(representation) ;
-             * */
+        /// <summary>
+        /// Pushes the representation to the client
+        /// </summary>
+        private void PushRepresentation(string representation)
+        {
+            _finalRepresantion = representation;
+
+            //todo consider using signalR to push new representation to the client
         }
 
         [HttpGet("init")]
         public string Init()
         {
-            //todo check next line
-            //timeTraveler.SaveSnapshot(model, "res.status(200).send(view.init(model))");
-
-            return SamView.Init(Model);
+            _timeTraveler.SaveSnapshot(_model, "");
+            return _samView.Init(_model);
         }
 
 
