@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using HandlebarsDotNet;
-using Microsoft.AspNetCore.Hosting.Internal;
 using SamNetMvc.Helpers;
+using SamSafeCSharp.Helpers;
 
 namespace SamSafeCSharp.Components
 {

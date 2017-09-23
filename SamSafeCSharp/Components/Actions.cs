@@ -5,6 +5,16 @@ namespace SamSafeCSharp.Components
 {
     public class Actions
     {
+        public readonly Dictionary<string, Action<PresenterModel, Action<string>>> ActionList = new Dictionary<string, Action<PresenterModel, Action<string>>>();
+
+        public Actions()
+        {
+            ActionList.Add("edit", Edit);
+            ActionList.Add("save", Save);
+            ActionList.Add("delete", Delete);
+            ActionList.Add("cancel", Cancel);
+        }
+
         public readonly Dictionary<string, string> Intents = new Dictionary<string, string>()
         {
             {"edit","edit"},
@@ -13,27 +23,29 @@ namespace SamSafeCSharp.Components
             {"cancel","cancel"},
         };
 
-        private Func<PresenterModel, string, bool> _present;
+        private Action<PresenterModel, Action<string>> _present;
 
-        public void Init(Func<PresenterModel, string,bool> present)
+        public void Init(Action<PresenterModel, Action<string>> present)
         {
             this._present = present ?? Present;
         }
 
-        public static bool Present(PresenterModel data, string next = null)
+        /// <summary>
+        /// Default Presenter Method. 
+        /// </summary>
+        public static void Present(PresenterModel data, Action<string> next = null)
         {
-            return false;
+            // do nothing;
         }
 
-
-        public bool Edit(PresenterModel data, string next)
+        public void Edit(PresenterModel data, Action<string> next)
         {
             data.LastEdited = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
             Present(data, next);
-            return false;
+            //return false;
         }
 
-        public bool Save(PresenterModel data, string next)
+        public void Save(PresenterModel data, Action<string> next)
         {
             data.Item = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
 
@@ -52,19 +64,17 @@ namespace SamSafeCSharp.Components
                 // proceed as normal when created a new item
                 Present(data, next);
             }
-            return false;
         }
 
-        private static string EmptyifNull(string dataId)
+        public void Delete(PresenterModel data, Action<string> next)
         {
-            if (string.IsNullOrEmpty(dataId)) return "";
-            return dataId;
+            data.DeletedItemId = data.Id;
+            Present(data, next);
         }
 
-        public bool Cancel(PresenterModel data, string next)
+        public void Cancel(PresenterModel data, Action<string> next)
         {
             Present(data, next);
-            return false;
         }
 
 

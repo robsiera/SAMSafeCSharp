@@ -2,17 +2,17 @@
 {
     public class DefaultSessionManager
     {
-        public void DehydrateSession(object model)
+        public void DehydrateSession(Model model)
         {
-            /*if (model.__token)
+            if (string.IsNullOrEmpty( model.__token))
             {
-                safe.defaultSessionManager[model.__token] = model.__session;
-            }*/
+              //todo:  safe.defaultSessionManager[model.__token] = model.__session;
+            }
         }
 
-        public object RehydrateSession(object token)
+        public string RehydrateSession(string token)
         {
-            object session = token;
+            string session = token;
             return session;
         }
     };

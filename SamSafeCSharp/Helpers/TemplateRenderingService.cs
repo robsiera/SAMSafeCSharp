@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using HandlebarsDotNet;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 
-namespace SamSafeCSharp.Components
+namespace SamSafeCSharp.Helpers
 {
     public sealed class TemplateRenderingService
     {

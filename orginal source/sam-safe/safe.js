@@ -423,7 +423,7 @@ safe.newStep = (uid,allowedActions) => {
     return step ;
 } ;
 
-safe.render = (model,next, takeSnapShot) => {
+safe.render = (model, next, takeSnapShot) => {
     takeSnapShot = takeSnapShot || true ;
     if (takeSnapShot && safe.saveSnapshot) {
         // Store snapshot in TimeTravel

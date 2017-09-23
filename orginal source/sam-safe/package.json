@@ -9,7 +9,7 @@
     "body-parser": "*",
     "chai": "^3.5.0",
     "cookie-parser": "",
-    "express": "4.13.x",
+    "express": "^4.13.x",
     "morgan": "1.6.x",
     "node-uuid": "*"
   },

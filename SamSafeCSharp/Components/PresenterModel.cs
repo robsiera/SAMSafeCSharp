@@ -6,10 +6,11 @@
         public BlogPost LastEdited { get; set; }
         public int DeletedItemId { get; set; } = 0;
 
+        public string __actionId { get; set; }
         public string __token { get; set; }
         public string __session { get; set; }
 
         public string ActionId { get; set; }
-        
+
     }
 }

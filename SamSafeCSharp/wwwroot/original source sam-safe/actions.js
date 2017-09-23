@@ -24,51 +24,51 @@
 //
 // For more information, please refer to <http://unlicense.org/>
 
-'use strict' ;
+'use strict';
 
-var actions = {} ;
+var actions = {};
 
 actions.init = (present) => {
-    actions.present = present ;
-} ;
+    actions.present = present;
+};
 
 actions.present = (data) => {
-    return false ;
-} ;
+    return false;
+};
 
-actions.edit = (data,next) => {
-    data.lastEdited = {title: data.title,  description: data.description, id: data.id } ;
-    actions.present(data,next) ;
-    return false ;
-} ;
+actions.edit = (data, next) => {
+    data.lastEdited = { title: data.title, description: data.description, id: data.id };
+    actions.present(data, next);
+    return false;
+};
 
-actions.save = (data,next) => {
-    data.item = {title: data.title, description: data.description, id: data.id || ''} ;
+actions.save = (data, next) => {
+    data.item = { title: data.title, description: data.description, id: data.id || '' };
     if (data.item.id !== '') {
         // simulate a slow save after
         // editing an item
-        setTimeout(function() { 
-            actions.present(data,next) ;
+        setTimeout(function () {
+            actions.present(data, next);
         }, 9000);
     }
     else {
         // proceed as normal when created a new item
-        actions.present(data,next) ;
+        actions.present(data, next);
     }
-    return false ;
-} ;
+    return false;
+};
 
-actions.delete = (data,next) => {
-    data.deletedItemId = data.id ;
-    actions.present(data,next) ;
-    return false ;
-} ;
+actions.delete = (data, next) => {
+    data.deletedItemId = data.id;
+    actions.present(data, next);
+    return false;
+};
 
-actions.cancel = (data,next) => {
-    actions.present(data,next) ;
-    return false ;
-} ;
+actions.cancel = (data, next) => {
+    actions.present(data, next);
+    return false;
+};
 
-actions.intents = { edit: 'edit', save: 'save', delete: 'delete', cancel: 'cancel' } ;
+actions.intents = { edit: 'edit', save: 'save', delete: 'delete', cancel: 'cancel' };
 
-module.exports = actions ;
+module.exports = actions;

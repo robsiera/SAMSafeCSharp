@@ -20,6 +20,8 @@
 
         public void Init(App app, string path, string next)
         {
+            //todo 
+
             /*display = next || display;
 
             // API : returns a given snapshot or all if index is negative 

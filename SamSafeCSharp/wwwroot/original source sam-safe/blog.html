@@ -87,14 +87,15 @@
 		// This sample was inspired from @rajaraodv
 		// https://medium.com/@rajaraodv/a-guide-for-building-a-react-redux-crud-app-7fe0b8943d0f#.e7501tdde
 
+        var endpoint = 'http://localhost:5425' ;
         function travel(data) {
             // client side
             //model.present(data) ;
 
             // server side
-            $.get( "http://localhost:5425/dev/v1/timetravel/snapshots/"+data.snapshot) 
+            $.get( endpoint+"/dev/v1/timetravel/snapshots/"+data.snapshot) 
             .done(function( snapshot ) {
-                $.post( "http://localhost:5425/dev/v1/timetravel/snapshots/"+data.snapshot, snapshot)
+                $.post( endpoint+"/dev/v1/timetravel/snapshots/"+data.snapshot, snapshot)
                 .done( function (representation) {
                     $( "#representation" ).html( representation );
                 })
@@ -107,7 +108,7 @@
             //model.present(data) ;
 
             // server side
-            $.post( "http://localhost:5425/app/v1/dispatch", data) 
+            $.post( endpoint+"/app/v1/dispatch", data) 
             .done(function( representation ) {
                 $( "#representation" ).html( representation );
             }        
@@ -119,7 +120,7 @@
 			//model.present(data) ;
 
 			// server side
-			$.post( "http://localhost:5425/app/v1/present", data) 
+            $.post( endpoint+"/app/v1/present", data) 
 			.done(function( representation ) {
 				$( "#representation" ).html( representation );
 			}		
@@ -133,7 +134,7 @@
             actions.do = dispatch 
 
 			// server side
-			$.get( "http://localhost:5425/app/v1/init", function( data ) {
+            $.get( endpoint+"/app/v1/init", function( data ) {
 				$( "#representation" ).html( data );
 			}		
 			);

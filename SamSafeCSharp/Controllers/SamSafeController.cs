@@ -2,13 +2,16 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SamSafeCSharp.Components;
+using SamSafeCSharp.Helpers;
 
 namespace SafeCSharp
 {
     [Route("api/[controller]")]
     public class SamSafeController : Controller
     {
-        private readonly Actions _action; // not implemented on the server
+        private readonly Safe _safe = new Safe();
+
+        private readonly Actions _actions; // not implemented on the server
         private readonly Model _model;
         private readonly State _state;
         private readonly View _samView;
@@ -19,18 +22,19 @@ namespace SafeCSharp
 
         public SamSafeController(IHostingEnvironment hostingEnvironment)
         {
-            this._action = new Actions();
+            // Business Logic - SAM Pattern
+            this._actions = new Actions(); // not implemented on the server
             this._model = new Model();
             this._state = new State();
             this._samView = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
-            var safe = new Safe();
-            safe.Init(_action, _model, _state, _samView);
+
+            _safe.Init(_actions, _model, _state, _samView);
 
             // use default time traveler
             _timeTraveler = new DefaultTimeTraveler();
-            safe.InitTimeTraveler(_timeTraveler);
+            _safe.InitTimeTraveler(_timeTraveler);
 
             _config = new Config
             {
@@ -58,8 +62,8 @@ namespace SafeCSharp
             var app = new App();
 
             // add SAFE's APIs
-            Safe.Dispatcher(app, apis.dispatch, "");
-            _timeTraveler.Init(app, apis.timetravel, "");
+            Safe.Dispatcher(app, apis.dispatch, null);
+            _timeTraveler.Init(app, apis.timetravel, null);
         }
 
 
@@ -108,7 +112,18 @@ namespace SafeCSharp
             return _samView.Init(_model);
         }
 
+        [HttpGet("dispatch")]
+        public string Dispatch([FromBody] dynamic data)
+        {
+            Request.Cookies.TryGetValue("safe_token", out var safeToken);
+            data.__token = safeToken;
 
+            Action<string> nap = PushRepresentation;
+            _safe.Dispatch(data.__action, data, nap);
+
+            _timeTraveler.SaveSnapshot(_model, "");
+            return _samView.Init(_model);
+        }
     }
 
     public interface IAutorizor

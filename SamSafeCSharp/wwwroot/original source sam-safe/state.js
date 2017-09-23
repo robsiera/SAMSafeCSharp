@@ -27,53 +27,53 @@
 // For more information, please refer to <http://unlicense.org/>
 
 
-var state =  { } ;
+var state = {};
 
-state.init = function(render, view, display, intents) {
-    
-    if (render !== undefined) { 
-        state.view = view ; 
-        state.display = display || view.display ;
+state.init = function (render, view, display, intents) {
+
+    if (render !== undefined) {
+        state.view = view;
+        state.display = display || view.display;
     }
-    
-    if (intents !== undefined) { state.intents = intents ; }
-    
-    if (render !== null) { state.render = render ; }
-    
-} ;
+
+    if (intents !== undefined) { state.intents = intents; }
+
+    if (render !== null) { state.render = render; }
+
+};
 
 // Derive the state representation as a function of the systen
 // control state
-state.representation = function(model,next) {
-    var representation = 'oops... something went wrong, the system is in an invalid state' ;
+state.representation = function (model, next) {
+    var representation = 'oops... something went wrong, the system is in an invalid state';
 
     if (state.ready(model)) {
-        representation = state.view.ready(model, state.intents) ;
-    } 
-    
-    state.display(representation,next) ;
-    
+        representation = state.view.ready(model, state.intents);
+    }
+
+    state.display(representation, next);
+
     // return allowed actions
-    return ['edit', 'save', 'delete', 'cancel'] ;
-} ;
+    return ['edit', 'save', 'delete', 'cancel'];
+};
 
 // Derive the current state of the system
-state.ready = function(model) {
-   return true ;
-} ;
+state.ready = function (model) {
+    return true;
+};
 
 
 // Next action predicate, derives whether
 // the system is in a (control) state where
 // a new (next) action needs to be invoked
 
-state.nextAction = function(model) {} ;
+state.nextAction = function (model) { };
 
 
-state.render = function(model,next) {
-    console.log('in render') ;
-    state.representation(model,next) ;
-    state.nextAction(model) ;
-} ;
+state.render = function (model, next) {
+    console.log('in render');
+    state.representation(model, next);
+    state.nextAction(model);
+};
 
-module.exports = state ;
+module.exports = state;

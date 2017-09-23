@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace SamNetMvc.Helpers
 {
@@ -15,6 +13,15 @@ namespace SamNetMvc.Helpers
                 retval.Add(func(item));
             }
             return retval;
+        }
+
+        public static bool exists(this string[] stringArray, string key)
+        {
+            foreach (var item in stringArray)
+            {
+                if (item == key) return true;
+            }
+            return false;
         }
 
         public static string join<T>(this List<T> list, string inbetween)

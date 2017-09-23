@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
 
 
 // /////////////////////////////////////////////////////////////////
@@ -53,39 +52,38 @@ namespace SamSafeCSharp.Components
 {
     public class Safe
     {
-        private bool _saveSnapshot;
+        private Func<Model, string, int> _saveSnapshot;
         private Actions _actions;
         private Model _model;
         private State _state;
         private View _view;
         private DefaultLogger _logger;
-        private DefaultErrorHandler _errorHandler;
+        private Action<string> _errorHandler;
         private DefaultSessionManager _sessionManager;
-        private bool _hangback;
         private List<Step> _steps;
         private int _stepCount;
         private Step _lastStep;
         private string[] _allowedActions;
-        private Func<PresenterModel, string, bool> _present;
+        private bool _hangback;
+        private Func<int, string> _getSnapshot;
+        private Action<PresenterModel, Action<string>> _present;
         private Action<Model, Action<string>> _render;
         private Action<string, Action<string>> _display;
         private bool _blocked;
-        private Func<Model, string, int> saveSnapshot;
-        private Func<int, string> getSnapshot;
-        private Func<string, string> displayTimeTravelControls;
+        private Func<string, string> _displayTimeTravelControls;
 
 
         // SAFE Core
 
         // Insert SAFE middleware and wire SAM components
-        public void Init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, DefaultErrorHandler errorHandler = null, DefaultSessionManager sessionManager = null)
+        public void Init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, Action<string> errorHandler = null, DefaultSessionManager sessionManager = null)
         {
             this._actions = actions;
             this._model = model;
             this._state = state;
             this._view = view;
 
-            this._errorHandler = errorHandler ?? new DefaultErrorHandler();
+            this._errorHandler = errorHandler ?? DefaultErrorHandler;
             this._logger = logger ?? new DefaultLogger();
 
             this._hangback = false;
@@ -120,7 +118,7 @@ namespace SamSafeCSharp.Components
                 {
                     state.Init(null, view, this._display);
                 }
-                this._allowedActions = state.AllowedActions ?? new string[]{};
+                this._allowedActions = state.AllowedActions ?? new string[] { };
             }
         }
 
@@ -128,19 +126,20 @@ namespace SamSafeCSharp.Components
         {
             if (timeTraveler != null)
             {
-                this.saveSnapshot = timeTraveler.SaveSnapshot;
-                this.getSnapshot = timeTraveler.GetSnapshot;
-                this.displayTimeTravelControls = timeTraveler.DisplayTimeTravelControls;
+                this._saveSnapshot = timeTraveler.SaveSnapshot;
+                this._getSnapshot = timeTraveler.GetSnapshot;
+                this._displayTimeTravelControls = timeTraveler.DisplayTimeTravelControls;
             }
         }
 
         // The Dispatcher is an optional component which 
         // exposes a dispatch API 
-        public static void Dispatcher(App app, string path, string next)
+        public static void Dispatcher(App app, string path, Action<string> next)
         {
             // assumes express cookie-parser middleware
             app.Post(path);
 
+            //todo
             /*JS CODE
             app.post(path, function(req, res) {
                 var ret = (representation) => {
@@ -157,7 +156,7 @@ namespace SamSafeCSharp.Components
 
         // The dispatch method decides whether an action can be dispatched
         // based on SAFE's context
-        public void Dispatch(Actions action, string data, string next)
+        public void Dispatch(string action, PresenterModel data, Action<string> next)
         {
             this._logger.Info("dispatcher received request");
             bool dispatch = false;
@@ -169,28 +168,48 @@ namespace SamSafeCSharp.Components
              * 
              * */
 
-            if (lastStepActions.Length == 0)
+            if (lastStepActions.Count == 0)
             {
                 // action validation is disabled
                 dispatch = true;
             }
             else
             {
-                /*
-                 lastStepActions.forEach( (a) => {
-                safe.logger.info(a) ;
-                if (a.action === action) {
-                dispatch = true ;
-                // tag the action with the stepid
-                // we want to enforce one action per step
-                // if the step does not match we should not dispatch
-                data.__actionId = a.uid ;
-                safe.logger.info('tagging action with            '+JSON.stringify(a)) ;
-            
-                safe.lastStep.dispatched = action ;
+                foreach (var lastStep in lastStepActions)
+                {
+                    this._logger.Info(lastStep.ToString());
+                    if (lastStep.Action == action)
+                    {
+                        dispatch = true;
+                        // tag the action with the stepid
+                        // we want to enforce one action per step
+                        // if the step does not match we should not dispatch
+                        data.__actionId = lastStep.UId;
+                        this._logger.Info("tagging action with            " + lastStep.ToString());
+
+                        this._lastStep.Dispatched = action;
+                    }
+                }
             }
-             
-             */
+
+            if (!dispatch)
+            {
+                this._errorHandler(new { action = action, error = "not allowed" }.ToString());
+            }
+            else
+            {
+
+                if (this._actions.ActionList.ContainsKey(action))
+                {
+                    // dispatch action
+                    this._logger.Info("invoking action            " + data.ToString());
+                    this._actions.ActionList[action](data, next);
+                }
+                else
+                {
+                    this._errorHandler(new { action = action, error = "not found" }.ToString());
+                }
+
             }
         }
 
@@ -200,19 +219,19 @@ namespace SamSafeCSharp.Components
 
             if (!this._blocked)
             {
-                string lastStepActions = this._lastStep.Actions;
-                this._logger.Info(lastStepActions);
-                bool presentData = (lastStepActions.Length == 0);
+                var lastStepActions = this._lastStep.Actions;
+                this._logger.Info(lastStepActions.ToString());
+                bool presentData = (lastStepActions.Count == 0);
 
                 if (!presentData)
                 {
                     // are we expecting that action?
                     foreach (var item in lastStepActions)
                     {
-                        //if (item.Id == actionId) TODO
-                        //{
-                        //    presentData = true;
-                        //}
+                        if (item.UId == actionId)
+                        {
+                            presentData = true;
+                        }
                     }
                 }
                 if (presentData)
@@ -220,13 +239,13 @@ namespace SamSafeCSharp.Components
                     Block();
                     if (!string.IsNullOrEmpty(data.__token))
                     {
-                        //this.model.__session = this.sessionManager.rehydrateSession(data.__token); TODO
+                        this._model.__session = this._sessionManager.RehydrateSession(data.__token);
                         this._model.__token = data.__token;
                     }
-                    if (this._saveSnapshot)
+                    if (this._saveSnapshot != null)
                     {
                         // Store snapshot in TimeTravel
-                        //this.saveSnapshot(null, data); TODO
+                        this._saveSnapshot(null, data.ToString());
                     }
                     this._model.Present(data, next);
                 }
@@ -239,13 +258,13 @@ namespace SamSafeCSharp.Components
             else
             {
                 // ignore action's effect
-                // this.logger({ blocked: true,data}) ;
+                // this.logger({ blocked: true,data}) ; //todo
             }
         }
 
         public void Block()
         {
-            this._lastStep.Actions = "";
+            this._lastStep.Actions = new List<StepAction>();
             this._blocked = true;
         }
 
@@ -265,14 +284,19 @@ namespace SamSafeCSharp.Components
             return step;
         }
 
+        public void Render(Model model, Action<string> next)
+        {
+            Render(model, next, true);
+        }
+
         public void Render(Model model, Action<string> next, bool takeSnapshot)
         {
             //todo check next lines
             /*takeSnapShot = takeSnapShot || true;
-            if (takeSnapShot && safe.saveSnapshot)
+            if (takeSnapShot && this.saveSnapshot)
             {
                 // Store snapshot in TimeTravel
-                safe.saveSnapshot(model, null);
+                this.saveSnapshot(model, null);
             }*/
 
             this._allowedActions = this._state.Representation(model, next);
@@ -285,9 +309,9 @@ namespace SamSafeCSharp.Components
         public void Display(string representation, Action<string> next)
         {
 
-            if (this.displayTimeTravelControls != null)
+            if (this._displayTimeTravelControls != null)
             {
-                representation = this.displayTimeTravelControls(representation);
+                representation = this._displayTimeTravelControls(representation);
             }
             this._view.Display(representation, next);
 
@@ -295,62 +319,25 @@ namespace SamSafeCSharp.Components
 
         public void DeepCopy(string x)
         {
+            //todo
             //return JSON.parse(JSON.stringify(x));
         }
 
-    }
-    // minimal service implementations
-
-    // session manager 
-    // logger
-    public class DefaultLogger
-    {
-        public int LoggingLevel { get; set; }
-
-        public string Output(string level, string message)
+        public void DefaultErrorHandler(string message = "")
         {
-            DateTime time = DateTime.Now;
-            string m = message;
-            if (message is string)
-            {
-                // m = JSON.stringify(message) ;
-            }
 
-            return String.Format("%s: %s", level, message);
-        }
-
-        public void Warning(string message)
-        {
-            if (this.LoggingLevel <= 1)
-            {
-                this.Output("[WARNING]", message);
-            }
-        }
-        public void Info(string message)
-        {
-            if (this.LoggingLevel <= 0)
-            {
-                this.Output("[INFO]", message);
-            }
-        }
-        public void Error(string message)
-        {
-            if (this.LoggingLevel <= 0)
-            {
-                this.Output("[ERROR]", message);
-            }
-        }
-
-    }
-    // error handler
-    public class DefaultErrorHandler
-    {
-        public DefaultErrorHandler(string message = "")
-        {
+            //todo
             //Default logger = logger, this = safe volgens js
             //this.logger.Error(message);
         }
     }
+
+
+    // minimal service implementations
+
+    // session manager 
+    // logger
+
     // default in memory store for time travel 
     public class DefaultSnapshotStore
     {
@@ -378,15 +365,37 @@ namespace SamSafeCSharp.Components
     // time traveler
     public class Step
     {
-        public int UId { get; set; }
-        public string[] AllowedActions { get; set; }
-
         public Step(int uId, string[] allowedActions)
         {
-            this.UId = uId;
-            this.AllowedActions = allowedActions;
+            this.StepId = uId;
+            this.Actions = new List<StepAction>();
+
+            var k = 0;
+            foreach (var allowedAction in allowedActions)
+            {
+                this.Actions.Add(new StepAction(uId + "_" + k++, allowedAction));
+            }
         }
-        public string Actions { get; set; }
+        public int StepId { get; set; }
+        public List<StepAction> Actions { get; set; }
+
+        public string Dispatched;
+    }
+
+    public class StepAction
+    {
+        public StepAction(string uid, string allowedAction)
+        {
+            this.UId = uid;
+            this.Action = allowedAction;
+        }
+        public string UId { get; }
+        public string Action { get; }
+
+        public override string ToString()
+        {
+            return $"{UId} - {Action}";
+        }
     }
 }
 

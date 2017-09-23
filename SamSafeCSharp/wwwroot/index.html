@@ -84,9 +84,7 @@
     <script type="text/javascript" src="blog.js"></script>
 
     <script type="text/javascript">
-
-
-
+        
         var endpoint = 'http://localhost:2673';
         function travel(data) {
             // client side
@@ -131,7 +129,7 @@
             // client side
             //view.display(view.init(model)) ;
 
-            // actions.do = dispatch  //todo: when should this be enabled? when client side?
+            actions.handle = dispatch;  // set the handler of the actions the dispatcher function.
 
             // server side
             $.get(endpoint + "/api/samsafe/init", function (data) {
@@ -139,8 +137,6 @@
             }
             );
         }
-
-
 
         // Display initial state
         init();
