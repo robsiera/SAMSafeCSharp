@@ -84,7 +84,7 @@
     <script type="text/javascript" src="blog.js"></script>
 
     <script type="text/javascript">
-        
+
         var endpoint = 'http://localhost:2673';
         function travel(data) {
             // client side
@@ -106,11 +106,15 @@
             //model.present(data) ;
 
             // server side
-            $.post(endpoint + "/api/samsafe/dispatch", data)
-                .done(function (representation) {
+            $.ajax({
+                type: "POST",
+                url: endpoint + "/api/samsafe/dispatch",
+                data: JSON.stringify(data),
+                datatype: 'json',
+                success: function (representation) {
                     $("#representation").html(representation);
                 }
-                );
+            });
         }
 
         function present(data) {
@@ -118,11 +122,15 @@
             //model.present(data) ;
 
             // server side
-            $.post(endpoint + "/api/samsafe/present", data)
-                .done(function (representation) {
+            $.ajax({
+                type: "POST",
+                url: endpoint + "/api/samsafe/present",
+                data: JSON.stringify(data),
+                datatype: 'json',
+                success: function (representation) {
                     $("#representation").html(representation);
                 }
-                );
+            });
         }
 
         function init() {

@@ -115,7 +115,7 @@ namespace SafeCSharp
         }
 
         [HttpPost("dispatch")]
-        public string Dispatch([FromBody] dynamic reqdata)
+        public string Dispatch([FromBody] JObject reqdata)
         {
             dynamic data = reqdata;
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
