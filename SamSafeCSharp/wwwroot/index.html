@@ -110,7 +110,7 @@
                 type: "POST",
                 url: endpoint + "/api/samsafe/dispatch",
                 data: JSON.stringify(data),
-                datatype: 'json',
+                contentType: "application/json",
                 success: function (representation) {
                     $("#representation").html(representation);
                 }
@@ -126,7 +126,7 @@
                 type: "POST",
                 url: endpoint + "/api/samsafe/present",
                 data: JSON.stringify(data),
-                datatype: 'json',
+                contentType: "application/json",
                 success: function (representation) {
                     $("#representation").html(representation);
                 }
