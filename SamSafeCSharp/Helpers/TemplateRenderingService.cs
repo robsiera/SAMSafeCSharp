@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using HandlebarsDotNet;
 using Microsoft.AspNetCore.Hosting;
 
@@ -21,12 +22,24 @@ namespace SamSafeCSharp.Helpers
 
         public static TemplateRenderingService Instance => _handleBarRenderer;
 
-        internal string RenderHbs(string templateSource, dynamic model)
+        internal void RegisterPartial(string key, string templateName)
         {
-            var file = MapPath($@"templates/{templateSource}.hbs");
-            var template = Handlebars.Compile(File.ReadAllText(file));
+            var templateSource = ReadTemplate(templateName);
+            Handlebars.RegisterTemplate(key, templateSource);
+        }
+
+        internal string RenderHbs(string templateName, dynamic model)
+        {
+            var templateSource = ReadTemplate(templateName);
+            var template = Handlebars.Compile(templateSource);
             var retval = template(model);
             return retval;
+        }
+
+        private static string ReadTemplate(string templateName)
+        {
+            var file = MapPath($@"templates/{templateName}.hbs");
+            return File.ReadAllText(file);
         }
 
         private static string MapPath(string path)

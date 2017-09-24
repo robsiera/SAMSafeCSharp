@@ -1,0 +1,19 @@
+﻿<br>
+<br>
+<div class="blog-post">
+    {{#each posts}}
+        {{>post}}
+    {{/each}}
+</div>
+<br>
+<br>
+<div class="mdl-cell mdl-cell--6-col">
+    <input id="title" type="text" class="form-control" {{valAttr}}="{{titleValue}}"><br>
+    <input id="description" type="textarea" class="form-control" {{valAttr}}="{{descriptionValue}}"><br>
+    <button id="save" onclick="JavaScript:return actions.save({'title':document.getElementById('title').value, 'description': document.getElementById('description').value{{idElement}} });">{{actionLabel}}</button>
+    {{#if showCancel}}
+        <button id="cancel" onclick="JavaScript:return actions.cancel({});">Cancel</button>
+    {{/if}}
+</div>
+<br>
+<br>
