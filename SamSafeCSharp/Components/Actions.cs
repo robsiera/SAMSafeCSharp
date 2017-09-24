@@ -27,22 +27,22 @@ namespace SamSafeCSharp.Components
 
         public void Init(Action<PresenterModel, Action<string>> present)
         {
-            this._present = present ?? Present;
+            this._present = present ?? DefaultPresent;
         }
 
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
-        public static void Present(PresenterModel data, Action<string> next = null)
+        private static void DefaultPresent(PresenterModel data, Action<string> next = null)
         {
-            // do nothing;
+            // if this presenter is used, that means we forgot to specify one
+            throw new NotImplementedException("Present function not properly initialized?");
         }
 
         public void Edit(PresenterModel data, Action<string> next)
         {
             data.LastEdited = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
-            Present(data, next);
-            //return false;
+            _present(data, next);
         }
 
         public void Save(PresenterModel data, Action<string> next)
@@ -51,32 +51,33 @@ namespace SamSafeCSharp.Components
 
             if (data.Item.Id > 0)
             {
-                // simulate a slow save after
-                // editing an item
+                // simulate a slow save after editing an item
                 /*
                 setTimeout(function() {
                     actions.present(data, next);
                 }, 9000);
                 */
+
+                // slow save simulation not yet implemented in C#
+                // save normally
+                _present(data, next);
             }
             else
             {
                 // proceed as normal when created a new item
-                Present(data, next);
+                _present(data, next);
             }
         }
 
         public void Delete(PresenterModel data, Action<string> next)
         {
             data.DeletedItemId = data.Id;
-            Present(data, next);
+            _present(data, next);
         }
 
         public void Cancel(PresenterModel data, Action<string> next)
         {
-            Present(data, next);
+            _present(data, next);
         }
-
-
     }
 }

@@ -67,9 +67,6 @@ namespace SamSafeCSharp.Components
         private string[] _allowedActions;
         private bool _hangback;
         private Func<int, string> _getSnapshot;
-        private Action<PresenterModel, Action<string>> _present;
-        private Action<Model, Action<string>> _render;
-        private Action<string, Action<string>> _display;
         private bool _blocked;
         private Func<string, string> _displayTimeTravelControls;
 
@@ -98,7 +95,7 @@ namespace SamSafeCSharp.Components
 
             if (actions != null && model != null)
             {
-                actions.Init(this._present);
+                actions.Init(this.Present);
             }
 
             if (state != null)
@@ -106,18 +103,18 @@ namespace SamSafeCSharp.Components
                 if (model != null)
                 {
                     model.Init(this.Render);
-                    state.Init(this._render, this._view);
+                    state.Init(this.Render, this._view);
                 }
             }
             if (view != null)
             {
                 if (actions != null)
                 {
-                    state.Init(null, view, this._display, actions.Intents);
+                    state.Init(null, view, this.Display, actions.Intents);
                 }
                 else
                 {
-                    state.Init(null, view, this._display);
+                    state.Init(null, view, this.Display);
                 }
                 this._allowedActions = state.AllowedActions ?? new string[] { };
             }
@@ -193,7 +190,7 @@ namespace SamSafeCSharp.Components
 
         public void Present(PresenterModel data, Action<string> next)
         {
-            string actionId = data.ActionId ?? null;
+            string actionId = data.__actionId ?? null;
 
             if (!this._blocked)
             {

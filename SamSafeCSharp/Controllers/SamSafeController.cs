@@ -1,8 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using SamSafeCSharp.Components;
 using SamSafeCSharp.Helpers;
 
@@ -13,26 +11,23 @@ namespace SafeCSharp
     {
         private readonly Safe _safe = new Safe();
 
-        private readonly Actions _actions; // not implemented on the server
         private readonly Model _model;
-        private readonly State _state;
         private readonly View _samView;
 
-        private Config _config;
         private readonly DefaultTimeTraveler _timeTraveler;
         private string _finalRepresantion;
 
         public SamSafeController(IHostingEnvironment hostingEnvironment)
         {
             // Business Logic - SAM Pattern
-            this._actions = new Actions(); // not implemented on the server
+            Actions actions = new Actions();
+            State state = new State();
             this._model = new Model();
-            this._state = new State();
             this._samView = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
 
-            _safe.Init(_actions, _model, _state, _samView);
+            _safe.Init(actions, _model, state, _samView);
 
             // use default time traveler
             if (true == false) // change this to enable timetraveling
@@ -41,7 +36,7 @@ namespace SafeCSharp
                 _safe.InitTimeTraveler(_timeTraveler);
             }
 
-            _config = new Config
+            var config = new Config
             {
                 Port = 5425,
                 LoginKey = "abcdef0123456789",
@@ -115,18 +110,17 @@ namespace SafeCSharp
         }
 
         [HttpPost("dispatch")]
-        public string Dispatch([FromBody] JObject reqdata)
+        public string Dispatch([FromBody] PresenterModel data)
         {
-            dynamic data = reqdata;
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
             data.__token = safeToken;
 
             Action<string> nap = PushRepresentation;
             _safe.Dispatch(data.__action, data, nap);
 
-            _timeTraveler.SaveSnapshot(_model, "");
-            return _samView.Init(_model);
+            return _finalRepresantion;
         }
+
     }
 
     public interface IAutorizor
@@ -144,60 +138,4 @@ namespace SafeCSharp
         public string Username { get; set; }
         public string Password { get; set; }
     }
-
-
-    /*
-     * To Implement in Controller? 
-     * 
-     * var serverResponses = {
-            tooBusy: function(req,res) {
-                res.writeHead(429, { 'Content-Type': 'text/plain' });
-                res.end("Server is too busy, please try again later") ;
-            },
-    
-            unauthorized: function(req,res) {
-                res.header('Content-Type', 'text/html') ;
-                res.status(401).send('<htnl><body>Unauthorized access</body></html>') ;  
-            },
-    
-            serverError: function(req,res) {
-                res.header('Content-Type', 'text/html') ;
-                res.status(500).send('<htnl><body>Server Error</body></html>') ;  
-            }
-        } ;
-
-        var authnz = {
-
-            authorized: function (cookies) {
-                if (cookies.authorized > 0) {
-                    return true ;
-                }
-                return false ;
-            },
-    
-            del: function(req, res, cookie) { 
-                if (cookie !== undefined) {
-                    res.clearCookie(cookie);  
-                }
-            },
-    
-            set: function(req, res, cookie) { 
-                if (cookie !== undefined) {
-                     res.cookie(cookie, +new Date(), { maxAge: 3600000, path: '/' }); 
-                }
-            },
-    
-            isSet: function(req, res, cookie) { 
-                if (cookie !== undefined) {
-                     return res.cookies[cookie]; 
-                }
-            },
-    
-            validateCredentials: function(username,password) {
-                return ((username === config.username) && (password === config.password)) ;
-            }
-
-        } ;*/
-
-
 }

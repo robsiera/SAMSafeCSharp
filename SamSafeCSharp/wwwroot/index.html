@@ -140,10 +140,13 @@
             actions.handle = dispatch;  // set the handler of the actions the dispatcher function.
 
             // server side
-            $.get(endpoint + "/api/samsafe/init", function (data) {
-                $("#representation").html(data);
-            }
-            );
+            $.ajax({
+                type: "GET",
+                url: endpoint + "/api/samsafe/init",
+                success: function (representation) {
+                    $("#representation").html(representation);
+                }
+            });
         }
 
         // Display initial state
