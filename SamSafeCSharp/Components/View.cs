@@ -30,10 +30,6 @@ namespace SamSafeCSharp.Components
             if (intents == null)
                 intents = _intents;
 
-            if (model.LastEdited == null)
-            {
-                // model.lastEdited = model.lastEdited || {};
-            }
             var titleValue = model?.LastEdited?.Title.orDefault("Title");
             var descriptionValue = model?.LastEdited?.Description.orDefault("Description");
             var id = model?.LastEdited?.Id.ToString().orDefault("");
@@ -43,12 +39,15 @@ namespace SamSafeCSharp.Components
             var idElement = $@", 'id':'{id}'";
             if (id.IsNullOrEmpty())
             {
-                cancelButton = ""; valAttr = "placeholder"; idElement = ""; actionLabel = "Add";
+                cancelButton = "";
+                valAttr = "placeholder";
+                idElement = "";
+                actionLabel = "Add";
             }
             var output = (
-                $@"<br><br><div class=""blog-post"">{Environment.NewLine}" + model.Posts.map((e) =>
+                $@"<br><br><div class=""blog-post"">{Environment.NewLine}" + model.Posts.map((post) =>
                 {
-                    return TemplateRenderingService.Instance.RenderHbs("post", e);
+                    return TemplateRenderingService.Instance.RenderHbs("postitem", post);
 
                 }).@join($"{Environment.NewLine}") + $@"{Environment.NewLine}</div>{Environment.NewLine}
                 <br><br>{Environment.NewLine}

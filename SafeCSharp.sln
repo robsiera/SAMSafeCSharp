@@ -1,13 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SamSafeCSharp", "SamSafeCSharp\SamSafeCSharp.csproj", "{E6F53AFA-3637-43E4-A297-B670C6BE0CA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{734003A7-FB4E-4CBF-85E0-3B670F0C1E92}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Original Code", "Original Code", "{CAC006A3-0D8F-478E-AD05-549B466E5D35}"
+	ProjectSection(SolutionItems) = preProject
+		orginal source\sam-safe\actions.js = orginal source\sam-safe\actions.js
+		orginal source\sam-safe\blog.html = orginal source\sam-safe\blog.html
+		orginal source\sam-safe\blog.js = orginal source\sam-safe\blog.js
+		orginal source\sam-safe\model.js = orginal source\sam-safe\model.js
+		orginal source\sam-safe\safe.js = orginal source\sam-safe\safe.js
+		orginal source\sam-safe\server.js = orginal source\sam-safe\server.js
+		orginal source\sam-safe\state.js = orginal source\sam-safe\state.js
+		orginal source\sam-safe\timeTravelStore.js = orginal source\sam-safe\timeTravelStore.js
+		orginal source\sam-safe\view.js = orginal source\sam-safe\view.js
 	EndProjectSection
 EndProject
 Global
@@ -23,6 +36,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CAC006A3-0D8F-478E-AD05-549B466E5D35} = {734003A7-FB4E-4CBF-85E0-3B670F0C1E92}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F168E007-9DCF-4C89-B014-EF41CFDF3A85}
