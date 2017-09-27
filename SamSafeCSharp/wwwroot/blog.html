@@ -86,72 +86,85 @@
     <script type="text/javascript">
 
         var endpoint = 'http://localhost:2673';
-        function travel(data) {
-            // client side
-            //model.present(data) ;
+        var samVariantToUse = 'server'; // 'client'
 
-            // server side
-            $.get(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot)
-                .done(function (snapshot) {
-                    $.post(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot, snapshot)
-                        .done(function (representation) {
-                            $("#representation").html(representation);
-                        });
-                }
-                );
+        function travel(data) {
+            if (samVariantToUse === 'client') {
+                // client side
+                model.present(data);
+            }
+            else if (samVariantToUse === 'server') {
+                // server side
+                $.get(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot)
+                    .done(function (snapshot) {
+                        $.post(endpoint + "/dev/samsafe/timetravel/snapshots/" + data.snapshot, snapshot)
+                            .done(function (representation) {
+                                $("#representation").html(representation);
+                            });
+                    }
+                    );
+            }
         }
 
         function dispatch(data) {
-            // client side
-            //model.present(data) ;
-
-            // server side
-            $.ajax({
-                type: "POST",
-                url: endpoint + "/api/samsafe/dispatch",
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                success: function (representation) {
-                    $("#representation").html(representation);
-                }
-            });
+            if (samVariantToUse === 'client') {
+                // client side
+                model.present(data);
+            }
+            else if (samVariantToUse === 'server') {
+                // server side
+                $.ajax({
+                    type: "POST",
+                    url: endpoint + "/api/samsafe/dispatch",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (representation) {
+                        $("#representation").html(representation);
+                    }
+                });
+            }
         }
 
         function present(data) {
-            // client side
-            //model.present(data) ;
-
-            // server side
-            $.ajax({
-                type: "POST",
-                url: endpoint + "/api/samsafe/present",
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                success: function (representation) {
-                    $("#representation").html(representation);
-                }
-            });
+            if (samVariantToUse === 'client') {
+                // client side
+                model.present(data);
+            }
+            else if (samVariantToUse === 'server') {
+                // server side
+                $.ajax({
+                    type: "POST",
+                    url: endpoint + "/api/samsafe/present",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (representation) {
+                        $("#representation").html(representation);
+                    }
+                });
+            }
         }
 
         function init() {
-            // client side
-            //view.display(view.init(model)) ;
+            if (samVariantToUse === 'client') {
+                // client side
+                view.display(view.init(model));
+            }
+            else if (samVariantToUse === 'server') {
+                // server side
+                actions.handle = dispatch;  // set the handler of the actions the dispatcher function.
 
-            actions.handle = dispatch;  // set the handler of the actions the dispatcher function.
-
-            // server side
-            $.ajax({
-                type: "GET",
-                url: endpoint + "/api/samsafe/init",
-                success: function (representation) {
-                    $("#representation").html(representation);
-                }
-            });
+                $.ajax({
+                    type: "GET",
+                    url: endpoint + "/api/samsafe/init",
+                    success: function (representation) {
+                        $("#representation").html(representation);
+                    }
+                });
+            }
         }
 
         // Display initial state
         init();
-
 
     </script>
 </body>
