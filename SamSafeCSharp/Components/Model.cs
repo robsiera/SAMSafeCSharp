@@ -24,7 +24,7 @@ namespace SamSafeCSharp.Components
 
         public void Init(Action<Model, Action<string>> render)
         {
-            this.Render = render; 
+            this.Render = render;
         }
 
         public void Present(PresenterModel data, Action<string> next)
@@ -55,12 +55,11 @@ namespace SamSafeCSharp.Components
             }
             else
             {
-                // delete model.lastEdited; //TODO check 
+                LastEdited = null;  // delete model.lastEdited; 
             }
 
             if (data.Item != null)
             {
-
                 if (data.Item.Id > 0)
                 {
                     // item has been edited
