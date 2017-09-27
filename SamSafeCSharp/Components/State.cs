@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SamSafeCSharp.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace SamSafeCSharp.Components
@@ -35,8 +36,26 @@ namespace SamSafeCSharp.Components
             var representation = "Oops... something went wrong, the system";
             if (this.Ready(model))
             {
-                representation = this._view.Ready(model, this._intents);
+                //This logic should go to model
+                var id = JsHelpers.orDefault(model?.LastEdited?.Id.ToString(), "");
+
+                dynamic viewModel = new
+                {
+                    titleValue = model?.LastEdited?.Title.orDefault("Title"),
+                    descriptionValue = model?.LastEdited?.Description.orDefault("Description"),
+                    id = id,
+                    valAttr = id == "" ? "placeholder" : "value",
+                    actionLabel = id == "" ? "Add" : "Save",
+                    idElement = id == "" ? "" : $@", 'id':'{id}'",
+                    showCancel = id != "",
+                    posts = model.Posts
+                };
+
+                representation = JsHelpers.JSON.stringify(viewModel);
+
+                //representation = this._view.Ready(model, this._intents);
             }
+
             this._display(representation, next);
 
             // return allowed actions
