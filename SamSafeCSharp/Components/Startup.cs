@@ -35,7 +35,7 @@ namespace SamSafeCSharp.Components
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            app.UseDefaultFiles();
+			app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseSession();

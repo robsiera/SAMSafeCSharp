@@ -32,7 +32,6 @@ namespace SamSafeCSharp.Components
                 intents = _intents;
 
             var id = JsHelpers.orDefault(model?.LastEdited?.Id.ToString(), "");
-
             dynamic viewModel = new
             {
                 titleValue = model?.LastEdited?.Title.orDefault("Title"),

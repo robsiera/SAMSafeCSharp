@@ -110,24 +110,7 @@ namespace SafeCSharp
         public string Init()
         {
             _timeTraveler?.SaveSnapshot(_model, "");
-
-
-            //TODO: Move to model class
-            var id = JsHelpers.orDefault(_model?.LastEdited?.Id.ToString(), "");
-
-            dynamic viewModel = new
-            {
-                titleValue = _model?.LastEdited?.Title.orDefault("Title"),
-                descriptionValue = _model?.LastEdited?.Description.orDefault("Description"),
-                id = id,
-                valAttr = id == "" ? "placeholder" : "value",
-                actionLabel = id == "" ? "Add" : "Save",
-                idElement = id == "" ? "" : $@", 'id':'{id}'",
-                showCancel = id != "",
-                posts = _model.Posts
-            };
-
-            return JsHelpers.JSON.stringify(viewModel);
+            return _samView.Init(_model);
         }
 
         [HttpPost("dispatch")]
