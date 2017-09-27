@@ -25,6 +25,9 @@ namespace SamSafeCSharp.Components
         {
             // Add framework services.
             services.AddMvc();
+
+            services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +37,8 @@ namespace SamSafeCSharp.Components
             loggerFactory.AddDebug();
 			app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

@@ -1,26 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SamSafeCSharp.Helpers;
 
 namespace SamSafeCSharp.Components
 {
     public class Model
     {
-        public readonly List<BlogPost> Posts = new List<BlogPost>()
+        private readonly IJsonStore _jsonStore;
+
+        public Model(IJsonStore jsonStore)
         {
-            new BlogPost()
+            _jsonStore = jsonStore;
+            var sessionPosts = _jsonStore.GetObjectFromJson<List<BlogPost>>("sessionPosts");
+            Posts = sessionPosts ?? GetDefaultPosts();
+        }
+
+        private static List<BlogPost> GetDefaultPosts()
+        {
+            return new List<BlogPost>()
             {
-                Id = 1,
-                Title = "The SAM Pattern",
-                Description = "SAM is a new reactive/functional pattern that simplifies Front-End architectures by clearly separating the business logic from the view and, in particular, strictly decoupling back-end APIs from the Front-End. SAM is technology independent and as such can be used to build Web Apps or Native Apps"
-            },
-            new BlogPost()
-            {
-                Id = 2,
-                Title = "Why I no longer use MVC Frameworks",
-                Description = "The worst part of my job these days is designing APIs for front-end developers."
-            }
-        };
+                new BlogPost()
+                {
+                    Id = 1,
+                    Title = "The SAM Pattern",
+                    Description = "SAM is a new reactive/functional pattern that simplifies Front-End architectures by clearly separating the business logic from the view and, in particular, strictly decoupling back-end APIs from the Front-End. SAM is technology independent and as such can be used to build Web Apps or Native Apps"
+                },
+                new BlogPost()
+                {
+                    Id = 2,
+                    Title = "Why I no longer use MVC Frameworks",
+                    Description = "The worst part of my job these days is designing APIs for front-end developers."
+                }
+            };
+        }
+
+        public List<BlogPost> Posts { get; }
 
         public void Init(Action<Model, Action<string>> render)
         {
@@ -80,6 +95,8 @@ namespace SamSafeCSharp.Components
                 }
             }
 
+            _jsonStore.SetObjectAsJson("sessionPosts", Posts);
+
             //console.log(model);
             this.Render(this, next);
 
@@ -94,10 +111,10 @@ namespace SamSafeCSharp.Components
 
         public int ItemId { get; set; }
         public State State { get; set; }
-        
+
         public BlogPost LastDeleted { get; set; }
 
         public BlogPost LastEdited { get; set; }
 
-}
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SamSafeCSharp.Components;
 using SamSafeCSharp.Helpers;
@@ -17,12 +19,14 @@ namespace SafeCSharp
         private readonly DefaultTimeTraveler _timeTraveler;
         private string _finalRepresantion;
 
-        public SamSafeController(IHostingEnvironment hostingEnvironment)
+        public SamSafeController(IHostingEnvironment hostingEnvironment, IHttpContextAccessor httpContextAccessor)
         {
+            IJsonStore jsonStore = new SessionStore(httpContextAccessor);
+
             // Business Logic - SAM Pattern
             Actions actions = new Actions();
             State state = new State();
-            this._model = new Model();
+            this._model = new Model(jsonStore);
             this._samView = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
