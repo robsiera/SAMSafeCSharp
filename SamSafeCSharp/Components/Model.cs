@@ -51,18 +51,13 @@ namespace SamSafeCSharp.Components
 
             if (data.DeletedItemId != 0)
             {
-                var d = -1;
-
-                foreach (var post in Posts)
+                // delete item but keep reference in LastDeleted
+                LastDeleted = Posts.FirstOrDefault(post => post.Id != 0 && post.Id == data.DeletedItemId);
+                if (LastDeleted != null)
                 {
-                    if (post.Id != 0 && post.Id == data.DeletedItemId)
-                        d = post.Id;
+                    Posts.Remove(LastDeleted);
                 }
-
-                if (d > 0)
-                    LastDeleted = Posts.ElementAt(d);
             }
-
 
             if (data.LastEdited != null)
             {
