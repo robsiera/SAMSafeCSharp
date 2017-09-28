@@ -46,22 +46,6 @@ namespace SamSafeCSharp.Components
 
             TemplateRenderingService.Instance.RegisterPartial("post", "postitem");
             return TemplateRenderingService.Instance.RenderHbs("mainview", viewModel);
-
-            //var output = (
-            //    $@"<br><br><div class=""blog-post"">{Environment.NewLine}" + model.Posts.map((post) =>
-            //    {
-            //        return TemplateRenderingService.Instance.RenderHbs("postitem", post);
-
-            //    }).@join($"{Environment.NewLine}") + $@"{Environment.NewLine}</div>{Environment.NewLine}
-            //    <br><br>{Environment.NewLine}
-            //    <div class=""mdl-cell mdl-cell--6-col"">{Environment.NewLine}
-            //    <input id=""title"" type=""text"" class=""form-control""  {valAttr}=""{titleValue}""><br>{Environment.NewLine}
-            //    <input id=""description"" type=""textarea"" class=""form-control"" {valAttr}=""{descriptionValue}""><br>{Environment.NewLine}
-            //    <button id=""save"" onclick=""JavaScript:return actions.save({{'title':document.getElementById('title').value, 'description': document.getElementById('description').value{idElement}}});"">{actionLabel}</button>
-            //    {Environment.NewLine}{cancelButton}{Environment.NewLine}</div>
-            //    <br><br>{Environment.NewLine}");
-            //return output;
-
         }
 
         public void Display(string representation, Action<string> next)
