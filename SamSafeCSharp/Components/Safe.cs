@@ -106,7 +106,7 @@ namespace SamSafeCSharp.Components
                     state.Init(this.Render, this._view);
                 }
             }
-            if (view != null)
+            if (view != null && state != null)
             {
                 if (actions != null)
                 {
