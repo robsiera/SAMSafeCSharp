@@ -41,7 +41,9 @@ namespace SamSafeCSharp.Components
                 actionLabel = id == "" ? "Add" : "Save",
                 idElement = id == "" ? "" : $@", 'id':'{id}'",
                 showCancel = id != "",
-                posts = model.Posts
+                posts = model.Posts,
+                intents,
+                editintent=intents["save"]
             };
 
             //TemplateRenderingService.Instance.RegisterPartial("post", "postitem");
