@@ -44,8 +44,10 @@ namespace SamSafeCSharp.Components
                 posts = model.Posts
             };
 
-            TemplateRenderingService.Instance.RegisterPartial("post", "postitem");
-            return TemplateRenderingService.Instance.RenderHbs("mainview", viewModel);
+            //TemplateRenderingService.Instance.RegisterPartial("post", "postitem");
+            //return TemplateRenderingService.Instance.RenderHbs("mainview", viewModel);
+
+            return JsHelpers.JSON.stringify(viewModel);
         }
 
         public void Display(string representation, Action<string> next)
