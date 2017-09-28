@@ -71,7 +71,7 @@ namespace SamSafeCSharp.Components
 
         public void Delete(ProposalModel data, Action<string> next)
         {
-            data.DeletedItemId = data.DeletedItemId;
+            data.DeletedItemId = data.Id;
             _present(data, next);
         }
 
