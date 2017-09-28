@@ -14,7 +14,7 @@ namespace SafeCSharp
         private readonly Safe _safe = new Safe();
 
         private readonly Model _model;
-        private readonly View _samView;
+        private readonly View _view;
 
         private readonly DefaultTimeTraveler _timeTraveler;
         private string _finalRepresantion;
@@ -27,11 +27,11 @@ namespace SafeCSharp
             Actions actions = new Actions();
             State state = new State();
             this._model = new Model(jsonStore);
-            this._samView = new View();
+            this._view = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
 
-            _safe.Init(actions, _model, state, _samView);
+            _safe.Init(actions, _model, state, _view);
 
             // use default time traveler
             if (true == false) // change this to enable timetraveling
@@ -110,7 +110,7 @@ namespace SafeCSharp
         public string Init()
         {
             _timeTraveler?.SaveSnapshot(_model, "");
-            return _samView.Init(_model);
+            return _view.Init(_model);
         }
 
         [HttpPost("dispatch")]
