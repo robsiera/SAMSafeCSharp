@@ -9,7 +9,7 @@
 
 
         public int Id { get; set; }
-        public BlogPost Item { get; set; } // TODO: Check should we need this propery here 
+        public BlogPost Item { get; set; } 
         public BlogPost LastEdited { get; set; }
         public int DeletedItemId { get; set; } = 0;
     }
