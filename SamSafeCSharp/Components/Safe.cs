@@ -73,7 +73,9 @@ namespace SamSafeCSharp.Components
 
         // SAFE Core
 
-        // Insert SAFE middleware and wire SAM components
+        /// <summary>
+        /// Insert SAFE middleware and wire SAM components
+        /// </summary>
         public void Init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, Action<string> errorHandler = null, DefaultSessionManager sessionManager = null)
         {
             this._actions = actions;
@@ -131,8 +133,10 @@ namespace SamSafeCSharp.Components
         }
 
 
-        // The dispatch method decides whether an action can be dispatched
-        // based on SAFE's context
+        /// <summary>
+        /// The dispatch method decides whether an action can be dispatched
+        /// based on SAFE's context
+        /// </summary>
         public void Dispatch(string action, PresenterModel data, Action<string> next)
         {
             this._logger.Info("dispatcher received request");
@@ -188,7 +192,7 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Present(PresenterModel data, Action<string> next)
+        private void Present(PresenterModel data, Action<string> next)
         {
             string actionId = data.__actionId ?? null;
 
@@ -237,18 +241,18 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Block()
+        private void Block()
         {
             this._lastStep.Actions = new List<StepAction>();
             this._blocked = true;
         }
 
-        public void UnBlock()
+        private void UnBlock()
         {
             this._blocked = false;
         }
 
-        public Step NewStep(int uId = 0, string[] allowedActions = null)
+        private Step NewStep(int uId = 0, string[] allowedActions = null)
         {
             _allowedActions = allowedActions ?? new string[] { };
             Step step = new Step(uId, allowedActions);
@@ -258,12 +262,12 @@ namespace SamSafeCSharp.Components
             return step;
         }
 
-        public void Render(Model model, Action<string> next)
+        private void Render(Model model, Action<string> next)
         {
             Render(model, next, true);
         }
 
-        public void Render(Model model, Action<string> next, bool takeSnapshot)
+        private void Render(Model model, Action<string> next, bool takeSnapshot)
         {
             //todo check next lines
             /*takeSnapShot = takeSnapShot || true;
@@ -280,7 +284,7 @@ namespace SamSafeCSharp.Components
             this._state.NextAction(model);
         }
 
-        public void Display(string representation, Action<string> next)
+        private void Display(string representation, Action<string> next)
         {
 
             if (this._displayTimeTravelControls != null)
@@ -291,7 +295,7 @@ namespace SamSafeCSharp.Components
 
         }
 
-        public void DefaultErrorHandler(string message = "")
+        private void DefaultErrorHandler(string message = "")
         {
 
             this._logger.Error(message);

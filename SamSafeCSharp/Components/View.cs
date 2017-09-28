@@ -29,7 +29,7 @@ namespace SamSafeCSharp.Components
         public string Ready(Model model, Dictionary<string, string> intents = null)
         {
             if (intents == null)
-                intents = _intents; // todo: intents are not used?
+                intents = _intents; // todo: intents never used??
 
             var id = JsHelpers.orDefault(model?.LastEdited?.Id.ToString(), "");
             dynamic viewModel = new

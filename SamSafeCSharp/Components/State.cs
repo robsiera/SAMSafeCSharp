@@ -28,8 +28,9 @@ namespace SamSafeCSharp.Components
             this._render = render ?? this.DefaultRender;
         }
 
-        // Derive the state representation as a function of the systen
-        // control state
+        /// <summary>
+        /// Derive the state representation as a function of the system control state
+        /// </summary>
         public string[] Representation(Model model, Action<string> next)
         {
             var representation = "Oops... something went wrong, the system";
@@ -43,18 +44,24 @@ namespace SamSafeCSharp.Components
             return new string[] { "edit", "save", "delete", "cancel" };
         }
 
-        // Derive the current state of the system
-        public bool Ready(Model model)
+        /// <summary>
+        /// Next action predicate, derives whether the system is in a (control) state 
+        /// where a new (next) action needs to be invoked
+        /// </summary>
+        public void NextAction(Model model)
+        {
+
+        }
+
+        /// <summary>
+        /// Derive the current state of the system
+        /// </summary>
+        private bool Ready(Model model)
         {
             return true;
         }
 
-        // Next action predicate, derives whether the system is in a (control) state 
-        // where a new (next) action needs to be invoked
-        public void NextAction(Model model) { }
-
-
-        public void DefaultRender(Model model, Action<string> next)
+        private void DefaultRender(Model model, Action<string> next)
         {
             this.Representation(model, next);
             this.NextAction(model);
