@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using SamSafeCSharp.Helpers;
 
-
 // /////////////////////////////////////////////////////////////////
 // State-Action Fabric Element 
 // SAFE is a micro-container for server-side SAM implementations
@@ -54,13 +53,13 @@ namespace SamSafeCSharp.Components
     public class Safe
     {
         private Func<Model, string, int> _saveSnapshot;
-        private Actions _actions;
-        private Model _model;
-        private State _state;
-        private View _view;
-        private DefaultLogger _logger;
+        private IActions _actions;
+        private IModel _model;
+        private IState _state;
+        private IView _view;
+        private ILogger _logger;
         private Action<string> _errorHandler;
-        private DefaultSessionManager _sessionManager;
+        private ISessionManager _sessionManager;
         private List<Step> _steps;
         private int _stepCount;
         private Step _lastStep;
@@ -76,7 +75,7 @@ namespace SamSafeCSharp.Components
         /// <summary>
         /// Insert SAFE middleware and wire SAM components
         /// </summary>
-        public void Init(Actions actions, Model model, State state, View view, DefaultLogger logger = null, Action<string> errorHandler = null, DefaultSessionManager sessionManager = null)
+        public void Init(IActions actions, IModel model, IState state, IView view, ILogger logger = null, Action<string> errorHandler = null, ISessionManager sessionManager = null)
         {
             this._actions = actions;
             this._model = model;
@@ -122,7 +121,7 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void InitTimeTraveler(DefaultTimeTraveler timeTraveler)
+        public void InitTimeTraveler(ITimeTraveler timeTraveler)
         {
             if (timeTraveler != null)
             {
@@ -192,7 +191,7 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        private void Present(ProposalModel data, Action<string> next)
+        private void Present(IProposalModel data, Action<string> next)
         {
             string actionId = data.__actionId ?? null;
 
@@ -262,12 +261,12 @@ namespace SamSafeCSharp.Components
             return step;
         }
 
-        private void Render(Model model, Action<string> next)
+        private void Render(IModel model, Action<string> next)
         {
             Render(model, next, true);
         }
 
-        private void Render(Model model, Action<string> next, bool takeSnapshot)
+        private void Render(IModel model, Action<string> next, bool takeSnapshot)
         {
             //todo check next lines
             /*takeSnapShot = takeSnapShot || true;

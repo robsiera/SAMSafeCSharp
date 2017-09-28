@@ -13,10 +13,10 @@ namespace SafeCSharp
     {
         private readonly Safe _safe = new Safe();
 
-        private readonly Model _model;
-        private readonly View _view;
+        private readonly IModel _model;
+        private readonly IView _view;
 
-        private readonly DefaultTimeTraveler _timeTraveler;
+        private readonly ITimeTraveler _timeTraveler;
         private string _finalRepresantion;
 
         public SamSafeController(IHostingEnvironment hostingEnvironment, IHttpContextAccessor httpContextAccessor)

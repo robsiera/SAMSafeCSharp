@@ -10,7 +10,7 @@
 <br>
 <div class="blog-post">
     {{#each posts}}
-        {{>post}}
+    {{>post}}
     {{/each}}
 </div>
 <br>
@@ -20,7 +20,7 @@
     <input id="description" type="textarea" class="form-control" {{valAttr}}="{{descriptionValue}}"><br>
     <button id="save" onclick="JavaScript:return actions.{{lookup intents 'save'}}({'title':document.getElementById('title').value, 'description': document.getElementById('description').value{{idElement}} });">{{actionLabel}}</button>
     {{#if showCancel}}
-        <button id="cancel" onclick="JavaScript:return actions.{{lookup intents 'cancel'}}({});">Cancel</button>
+    <button id="cancel" onclick="JavaScript:return actions.{{lookup intents 'cancel'}}({});">Cancel</button>
     {{/if}}
 </div>
 <br>

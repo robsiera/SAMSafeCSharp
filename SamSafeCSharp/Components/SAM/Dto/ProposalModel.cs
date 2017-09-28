@@ -1,6 +1,6 @@
 ﻿namespace SamSafeCSharp.Components
 {
-    public class ProposalModel 
+    public class ProposalModel : IProposalModel
     {
         public string __action { get; set; }
         public string __actionId { get; set; }
@@ -9,8 +9,8 @@
 
 
         public int Id { get; set; }
-        public BlogPost Item { get; set; } 
-        public BlogPost LastEdited { get; set; }
+        public IItem Item { get; set; }
+        public IItem LastEdited { get; set; }
         public int DeletedItemId { get; set; } = 0;
     }
 }

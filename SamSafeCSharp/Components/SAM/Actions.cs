@@ -12,29 +12,34 @@ namespace SamSafeCSharp.Components
     /// For instance, we can define an action which will invoke a 3rd party validation service, which given an address, 
     /// returns the postal address (or an error). It is then the postal address which is presented to the model.
     /// </summary>
-    public class Actions
+    public class Actions : IActions
     {
-        public readonly Dictionary<string, Action<ProposalModel, Action<string>>> ActionList = new Dictionary<string, Action<ProposalModel, Action<string>>>();
+        private Action<IProposalModel, Action<string>> _present;
+
+        public Dictionary<string, string> Intents { get; set; }
+
+        public Dictionary<string, Action<IProposalModel, Action<string>>> ActionList { get; set; }
 
         public Actions()
         {
-            ActionList.Add("edit", Edit);
-            ActionList.Add("save", Save);
-            ActionList.Add("delete", Delete);
-            ActionList.Add("cancel", Cancel);
+            Intents = new Dictionary<string, string>
+            {
+                { "edit", "edit" },
+                { "save", "save" },
+                { "delete", "delete" },
+                { "cancel", "cancel" }
+            };
+
+            ActionList = new Dictionary<string, Action<IProposalModel, Action<string>>>
+            {
+                { "edit", Edit },
+                { "save", Save },
+                { "delete", Delete },
+                { "cancel", Cancel }
+            };
         }
 
-        public readonly Dictionary<string, string> Intents = new Dictionary<string, string>()
-        {
-            {"edit","edit"},
-            {"save","save"},
-            {"delete","delete"},
-            {"cancel","cancel"},
-        };
-
-        private Action<ProposalModel, Action<string>> _present;
-
-        public void Init(Action<ProposalModel, Action<string>> present)
+        public void Init(Action<IProposalModel, Action<string>> present)
         {
             this._present = present ?? DefaultPresent;
         }
@@ -42,19 +47,19 @@ namespace SamSafeCSharp.Components
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
-        private static void DefaultPresent(ProposalModel data, Action<string> next = null)
+        private static void DefaultPresent(IProposalModel data, Action<string> next = null)
         {
             // if this presenter is used, that means we forgot to specify one
             throw new NotImplementedException("Present function not properly initialized?");
         }
 
-        public void Edit(ProposalModel data, Action<string> next)
+        public void Edit(IProposalModel data, Action<string> next)
         {
             data.LastEdited = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
             _present(data, next);
         }
 
-        public void Save(ProposalModel data, Action<string> next)
+        public void Save(IProposalModel data, Action<string> next)
         {
             data.Item = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
 
@@ -78,13 +83,13 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Delete(ProposalModel data, Action<string> next)
+        public void Delete(IProposalModel data, Action<string> next)
         {
             data.DeletedItemId = data.Id;
             _present(data, next);
         }
 
-        public void Cancel(ProposalModel data, Action<string> next)
+        public void Cancel(IProposalModel data, Action<string> next)
         {
             _present(data, next);
         }

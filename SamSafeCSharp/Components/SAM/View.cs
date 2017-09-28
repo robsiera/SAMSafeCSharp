@@ -6,7 +6,7 @@ using SamSafeCSharp.Helpers;
 
 namespace SamSafeCSharp.Components
 {
-    public class View
+    public class View : IView
     {
         public View()
         {
@@ -26,7 +26,7 @@ namespace SamSafeCSharp.Components
             return Ready(model);
         }
 
-        public string Ready(Model model, Dictionary<string, string> intents = null)
+        public string Ready(IModel model, Dictionary<string, string> intents = null)
         {
             if (intents == null)
                 intents = _intents; // todo: intents never used??
@@ -43,7 +43,6 @@ namespace SamSafeCSharp.Components
                 showCancel = id != "",
                 posts = model.Posts,
                 intents,
-                editintent=intents["save"]
             };
 
             //TemplateRenderingService.Instance.RegisterPartial("post", "postitem");

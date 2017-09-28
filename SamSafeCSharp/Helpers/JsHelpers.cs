@@ -8,7 +8,7 @@ namespace SamSafeCSharp.Helpers
 {
     public static class JsHelpers
     {
-        public static  class JSON
+        public static class JSON
         {
             public static string stringify(object obj)
             {
@@ -21,7 +21,7 @@ namespace SamSafeCSharp.Helpers
         {
             return JToken.Parse(JsHelpers.JSON.stringify(x));
         }
-        public static object DeepCopy(Model x)
+        public static object DeepCopy(IModel x)
         {
             return JToken.Parse(JsHelpers.JSON.stringify(x));
         }
@@ -60,6 +60,6 @@ namespace SamSafeCSharp.Helpers
             return string.IsNullOrEmpty(value);
         }
 
-       
+
     }
 }

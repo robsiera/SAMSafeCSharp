@@ -1,6 +1,6 @@
 ﻿namespace SamSafeCSharp.Components
 {
-    public class BlogPost
+    public class BlogPost : IItem
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -5,20 +5,20 @@ using SamSafeCSharp.Helpers;
 
 namespace SamSafeCSharp.Components
 {
-    public class Model
+    public class Model : IModel
     {
         private readonly IJsonStore _jsonStore;
 
         public Model(IJsonStore jsonStore)
         {
             _jsonStore = jsonStore;
-            var sessionPosts = _jsonStore.GetObjectFromJson<List<BlogPost>>("sessionPosts");
+            var sessionPosts = _jsonStore.GetObjectFromJson<List<IItem>>("sessionPosts");
             Posts = sessionPosts ?? GetDefaultPosts();
         }
 
-        private static List<BlogPost> GetDefaultPosts()
+        private static List<IItem> GetDefaultPosts()
         {
-            return new List<BlogPost>()
+            return new List<IItem>()
             {
                 new BlogPost()
                 {
@@ -35,14 +35,14 @@ namespace SamSafeCSharp.Components
             };
         }
 
-        public List<BlogPost> Posts { get; }
+        public List<IItem> Posts { get; }
 
-        public void Init(Action<Model, Action<string>> render)
+        public void Init(Action<IModel, Action<string>> render)
         {
             this.Render = render;
         }
 
-        public void Present(ProposalModel data, Action<string> next)
+        public void Present(IProposalModel data, Action<string> next)
         {
             if (data == null)
             {
@@ -100,14 +100,14 @@ namespace SamSafeCSharp.Components
         public string __token { get; set; }
         public string __session { get; set; }
 
-        private Action<Model, Action<string>> Render { get; set; }
+        private Action<IModel, Action<string>> Render { get; set; }
 
         public int ItemId { get; set; }
-        public State State { get; set; }
+        public IState State { get; set; }
 
-        public BlogPost LastDeleted { get; set; }
+        public IItem LastDeleted { get; set; }
 
-        public BlogPost LastEdited { get; set; }
+        public IItem LastEdited { get; set; }
 
     }
 }

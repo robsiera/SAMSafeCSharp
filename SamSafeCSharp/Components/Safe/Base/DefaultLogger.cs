@@ -2,7 +2,7 @@
 
 namespace SamSafeCSharp.Components
 {
-    public class DefaultLogger
+    public class DefaultLogger : ILogger
     {
         public int LoggingLevel { get; set; }
 
