@@ -137,7 +137,7 @@ namespace SamSafeCSharp.Components
         /// The dispatch method decides whether an action can be dispatched
         /// based on SAFE's context
         /// </summary>
-        public void Dispatch(string action, PresenterModel data, Action<string> next)
+        public void Dispatch(string action, ProposalModel data, Action<string> next)
         {
             this._logger.Info("dispatcher received request");
             bool dispatch = false;
@@ -192,7 +192,7 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        private void Present(PresenterModel data, Action<string> next)
+        private void Present(ProposalModel data, Action<string> next)
         {
             string actionId = data.__actionId ?? null;
 

@@ -204,8 +204,9 @@ actions.edit = (data) => {
 
 actions.save = (data) => {
     // data.item = {title: data.title, description: data.description, id: data.id || null} ;
-    data.__action = 'save';
-    actions.handle(data);
+    var proposal = {item: data};
+    proposal.__action = 'save';
+    actions.handle(proposal);
     return false;
 };
 
