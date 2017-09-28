@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace SamSafeCSharp.Components
 {
+    /// <summary>
+    /// Actions are responsible for implementing context specific logic. 
+    /// If we take the example of a "change of address" action, we might implement some context specific rules, 
+    /// such as when there is no country specified in the input dataset, the default country is Australia, 
+    /// while the model is responsible for the integrity of a customer address which requires a country value. 
+    /// In the context of SAM, actions play another important role with respect to invoking 3rd party APIs. 
+    /// For instance, we can define an action which will invoke a 3rd party validation service, which given an address, 
+    /// returns the postal address (or an error). It is then the postal address which is presented to the model.
+    /// </summary>
     public class Actions
     {
         public readonly Dictionary<string, Action<ProposalModel, Action<string>>> ActionList = new Dictionary<string, Action<ProposalModel, Action<string>>>();
