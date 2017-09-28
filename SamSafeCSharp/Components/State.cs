@@ -8,7 +8,7 @@ namespace SamSafeCSharp.Components
         internal string[] AllowedActions { get; set; }
         private View _view;
         private Action<string, Action<string>> _display;
-        private Action<Model, Action<string>> _render;
+        private Action<Model, Action<string>> _render; //todo _render never used??
         private Dictionary<string, string> _intents;
 
 
