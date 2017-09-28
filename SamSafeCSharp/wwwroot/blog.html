@@ -82,6 +82,7 @@
 
     <!-- The file blog.js is the isomorphic part of the application -->
     <script type="text/javascript" src="blog.js"></script>
+    <script type="text/javascript" src="/scripts/handelbars/handlebars-v4.0.10.js"></script>
 
     <script type="text/javascript">
 
@@ -118,8 +119,10 @@
                     url: endpoint + "/api/samsafe/dispatch",
                     data: JSON.stringify(data),
                     contentType: "application/json",
-                    success: function (representation) {
-                        $("#representation").html(representation);
+                    success: function (viewmodel) {
+
+                        var rendermodel = JSON.parse(viewmodel);
+                        render(rendermodel);
                     }
                 });
             }
@@ -156,11 +159,26 @@
                 $.ajax({
                     type: "GET",
                     url: endpoint + "/api/samsafe/init",
-                    success: function (representation) {
-                        $("#representation").html(representation);
+                    success: function (viewmodel) {
+                        var rendermodel = JSON.parse(viewmodel);
+                        render(rendermodel);
                     }
                 });
             }
+        }
+
+        function render(rendermodel) {
+
+            $.get('/templates/clientsidemaster.html', function (data) {
+
+                console.log(rendermodel);
+
+                var template = Handlebars.compile(data);
+
+                $("#representation").html(template(rendermodel));
+
+            }, 'html');
+
         }
 
         // Display initial state

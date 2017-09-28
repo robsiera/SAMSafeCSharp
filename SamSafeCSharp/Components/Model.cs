@@ -97,8 +97,6 @@ namespace SamSafeCSharp.Components
 
         }
 
-
-
         public string __token { get; set; }
         public string __session { get; set; }
 
