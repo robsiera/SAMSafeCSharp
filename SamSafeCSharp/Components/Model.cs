@@ -42,11 +42,11 @@ namespace SamSafeCSharp.Components
             this.Render = render;
         }
 
-        public void Present(PresenterModel data, Action<string> next)
+        public void Present(ProposalModel data, Action<string> next)
         {
             if (data == null)
             {
-                data = new PresenterModel(); //Implementation
+                data = new ProposalModel(); //Implementation
             }
 
             if (data.DeletedItemId != 0)

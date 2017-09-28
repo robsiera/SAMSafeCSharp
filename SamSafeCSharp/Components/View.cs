@@ -46,6 +46,8 @@ namespace SamSafeCSharp.Components
 
             TemplateRenderingService.Instance.RegisterPartial("post", "postitem");
             return TemplateRenderingService.Instance.RenderHbs("mainview", viewModel);
+
+            return JsHelpers.JSON.stringify(viewModel);
         }
 
         public void Display(string representation, Action<string> next)

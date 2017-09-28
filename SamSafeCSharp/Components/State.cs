@@ -40,7 +40,7 @@ namespace SamSafeCSharp.Components
             }
             this._display(representation, next);
 
-            // return allowed actions
+            // return possible actions (might not all be allowed, depends on the state)
             return new string[] { "edit", "save", "delete", "cancel" };
         }
 

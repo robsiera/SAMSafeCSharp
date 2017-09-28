@@ -92,7 +92,7 @@ namespace SafeCSharp
         [HttpPost]
         public string Present([FromBody] dynamic data)
         {
-            _model.Present((PresenterModel)data, PushRepresentation);
+            _model.Present((ProposalModel)data, PushRepresentation);
             return _finalRepresantion;
         }
 
@@ -114,7 +114,7 @@ namespace SafeCSharp
         }
 
         [HttpPost("dispatch")]
-        public string Dispatch([FromBody] PresenterModel data)
+        public string Dispatch([FromBody] ProposalModel data)
         {
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
             data.__token = safeToken;

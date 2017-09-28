@@ -66,7 +66,6 @@ state.ready = function(model) {
 // Next action predicate, derives whether
 // the system is in a (control) state where
 // a new (next) action needs to be invoked
-
 state.nextAction = function(model) {} ;
 
 state.render = function(model,next) {

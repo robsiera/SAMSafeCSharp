@@ -5,7 +5,7 @@ namespace SamSafeCSharp.Components
 {
     public class Actions
     {
-        public readonly Dictionary<string, Action<PresenterModel, Action<string>>> ActionList = new Dictionary<string, Action<PresenterModel, Action<string>>>();
+        public readonly Dictionary<string, Action<ProposalModel, Action<string>>> ActionList = new Dictionary<string, Action<ProposalModel, Action<string>>>();
 
         public Actions()
         {
@@ -23,9 +23,9 @@ namespace SamSafeCSharp.Components
             {"cancel","cancel"},
         };
 
-        private Action<PresenterModel, Action<string>> _present;
+        private Action<ProposalModel, Action<string>> _present;
 
-        public void Init(Action<PresenterModel, Action<string>> present)
+        public void Init(Action<ProposalModel, Action<string>> present)
         {
             this._present = present ?? DefaultPresent;
         }
@@ -33,21 +33,21 @@ namespace SamSafeCSharp.Components
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
-        private static void DefaultPresent(PresenterModel data, Action<string> next = null)
+        private static void DefaultPresent(ProposalModel data, Action<string> next = null)
         {
             // if this presenter is used, that means we forgot to specify one
             throw new NotImplementedException("Present function not properly initialized?");
         }
 
-        public void Edit(PresenterModel data, Action<string> next)
+        public void Edit(ProposalModel data, Action<string> next)
         {
-            data.LastEdited = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
+            data.LastEdited = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
             _present(data, next);
         }
 
-        public void Save(PresenterModel data, Action<string> next)
+        public void Save(ProposalModel data, Action<string> next)
         {
-            data.Item = new BlogPost { Title = data.Title, Description = data.Description, Id = data.Id };
+            data.Item = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
 
             if (data.Item.Id > 0)
             {
@@ -69,13 +69,13 @@ namespace SamSafeCSharp.Components
             }
         }
 
-        public void Delete(PresenterModel data, Action<string> next)
+        public void Delete(ProposalModel data, Action<string> next)
         {
-            data.DeletedItemId = data.Id;
+            data.DeletedItemId = data.DeletedItemId;
             _present(data, next);
         }
 
-        public void Cancel(PresenterModel data, Action<string> next)
+        public void Cancel(ProposalModel data, Action<string> next)
         {
             _present(data, next);
         }
