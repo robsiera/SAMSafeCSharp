@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using SamSafeCSharp.Components;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace SamSafeCSharp.Helpers
 {

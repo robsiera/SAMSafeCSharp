@@ -1,6 +1,6 @@
-﻿using SamSafeCSharp.Helpers;
+﻿using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components
+namespace SamSAFE.Base
 {
     public class DefaultTimeTraveler : ITimeTraveler
     {

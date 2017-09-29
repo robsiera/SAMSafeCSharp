@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using SamSafeCSharp.Helpers;
+using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components
+namespace SamSafeCSharp.Components.SAM
 {
     public class View : IView
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SamSafeCSharp.Components
+namespace SamSAFE.Interfaces
 {
     public interface IState
     {

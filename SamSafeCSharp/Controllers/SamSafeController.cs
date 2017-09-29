@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SamSafeCSharp.Components;
+using SamSafeCSharp.Components.SAM;
+using SamSafeCSharp.Components.SAM.Dto;
 using SamSafeCSharp.Helpers;
+using SamSAFE;
+using SamSAFE.Base;
+using SamSAFE.Interfaces;
 
-namespace SafeCSharp
+namespace SamSafeCSharp.Controllers
 {
     [Route("api/[controller]")]
     public class SamSafeController : Controller

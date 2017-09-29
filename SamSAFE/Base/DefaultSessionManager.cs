@@ -1,4 +1,6 @@
-﻿namespace SamSafeCSharp.Components
+﻿using SamSAFE.Interfaces;
+
+namespace SamSAFE.Base
 {
     public class DefaultSessionManager : ISessionManager
     {

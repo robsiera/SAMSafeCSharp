@@ -26,7 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using SamSafeCSharp.Helpers;
+using SamSAFE.Base;
+using SamSAFE.Interfaces;
 
 // /////////////////////////////////////////////////////////////////
 // State-Action Fabric Element 
@@ -48,11 +49,11 @@ using SamSafeCSharp.Helpers;
 
 
 
-namespace SamSafeCSharp.Components
+namespace SamSAFE
 {
     public class Safe
     {
-        private Func<Model, string, int> _saveSnapshot;
+        private Func<IModel, string, int> _saveSnapshot;
         private IActions _actions;
         private IModel _model;
         private IState _state;
@@ -136,7 +137,7 @@ namespace SamSafeCSharp.Components
         /// The dispatch method decides whether an action can be dispatched
         /// based on SAFE's context
         /// </summary>
-        public void Dispatch(string action, ProposalModel data, Action<string> next)
+        public void Dispatch(string action, IProposalModel data, Action<string> next)
         {
             this._logger.Info("dispatcher received request");
             bool dispatch = false;

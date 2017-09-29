@@ -1,4 +1,4 @@
-﻿namespace SamSafeCSharp.Components
+﻿namespace SamSAFE.Interfaces
 {
     public interface IProposalModel
     {

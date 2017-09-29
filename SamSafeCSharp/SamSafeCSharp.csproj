@@ -47,4 +47,8 @@
     <Folder Include="Views\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SamSAFE\SamSAFE.csproj" />
+  </ItemGroup>
+
 </Project>

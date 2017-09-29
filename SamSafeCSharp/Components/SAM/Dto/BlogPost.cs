@@ -1,4 +1,6 @@
-﻿namespace SamSafeCSharp.Components
+﻿using SamSAFE.Interfaces;
+
+namespace SamSafeCSharp.Components.SAM.Dto
 {
     public class BlogPost : IItem
     {

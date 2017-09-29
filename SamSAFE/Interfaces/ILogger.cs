@@ -1,5 +1,5 @@
 ﻿
-namespace SamSafeCSharp.Components
+namespace SamSAFE.Interfaces
 {
     public interface ILogger
     {
