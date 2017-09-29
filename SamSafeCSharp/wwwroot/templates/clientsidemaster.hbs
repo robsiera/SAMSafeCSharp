@@ -1,0 +1,27 @@
+﻿{{#* inline "post"}}
+<br>
+<br>
+<h3 class="blog-post-title" onclick="JavaScript:return actions. {{lookup @root.intents 'edit'}}({'title':'{{Title}}', 'description':'{{Description}}', 'id':'{{Id}}'});">{{Title}}</h3>
+<p class="blog-post-meta">{{Description}}</p>
+<button onclick="JavaScript:return actions.{{lookup @root.intents 'delete'}}({'id':'{{Id}}'});">Delete</button>
+{{/inline}}
+
+<br>
+<br>
+<div class="blog-post">
+    {{#each posts}}
+    {{>post}}
+    {{/each}}
+</div>
+<br>
+<br>
+<div class="mdl-cell mdl-cell--6-col">
+    <input id="title" type="text" class="form-control" {{valAttr}}="{{titleValue}}"><br>
+    <input id="description" type="textarea" class="form-control" {{valAttr}}="{{descriptionValue}}"><br>
+    <button id="save" onclick="JavaScript:return actions.{{lookup intents 'save'}}({'title':document.getElementById('title').value, 'description': document.getElementById('description').value{{idElement}} });">{{actionLabel}}</button>
+    {{#if showCancel}}
+    <button id="cancel" onclick="JavaScript:return actions.{{lookup intents 'cancel'}}({});">Cancel</button>
+    {{/if}}
+</div>
+<br>
+<br>

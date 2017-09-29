@@ -57,17 +57,6 @@
                     <blockquote>Problem is (follow me closely here, the science is pretty complicated), if I cut a hole in the Hab, the air won't stay inside anymore.</blockquote><br>
                     - Andy Weir, The Martian
                 </div>
-                <br>
-                <br>
-                <div class="mdl-cell mdl-cell--6-col">
-                    <input id="title" type="text" class="form-control" ><br>
-                    <input id="description" type="text" class="form-control"><br>
-                    <button id="save" onclick="JavaScript: return actions.save({'title':document.getElementById('title').value, 'description': document.getElementById('description').value});">Add</button>
-                    <!--{{#if showCancel}}
-                    <button id="cancel" onclick="JavaScript:return actions.cancel({});">Cancel</button>
-                    {{/if}}-->
-                </div>
-
             </div>
         </div>
 
@@ -93,6 +82,7 @@
 
     <!-- The file blog.js is the isomorphic part of the application -->
     <script type="text/javascript" src="blog.js"></script>
+    <script type="text/javascript" src="/scripts/handelbars/handlebars-v4.0.10.js"></script>
 
     <script type="text/javascript">
 
@@ -118,8 +108,6 @@
         }
 
         function dispatch(data) {
-
-            // TOOD: check how to empty input
             if (samVariantToUse === 'client') {
                 // client side
                 model.present(data);
@@ -131,12 +119,9 @@
                     url: endpoint + "/api/samsafe/dispatch",
                     data: JSON.stringify(data),
                     contentType: "application/json",
-                    success: function (representation)
-                    {
-                        var response = JSON.parse(representation);
-
-                        renderPosts(response.posts);
-                       
+                    success: function (viewmodel) {
+                        var rendermodel = JSON.parse(viewmodel);
+                        render(rendermodel);
                     }
                 });
             }
@@ -173,37 +158,21 @@
                 $.ajax({
                     type: "GET",
                     url: endpoint + "/api/samsafe/init",
-                    success: function (representation) {
-
-                        var response = JSON.parse(representation);
-
-                        renderPosts(response.posts);
-                      
+                    success: function (viewmodel) {
+                        var rendermodel = JSON.parse(viewmodel);
+                        render(rendermodel);
                     }
                 });
             }
         }
 
-        function renderPosts(posts) {
+        function render(rendermodel) {
 
-            //Reponse form server
-
-            //Reset old values
-            document.getElementById("representation").innerHTML = '';
-            document.getElementById("title").value = "";
-            document.getElementById("description").value = "";
-
-            //Render posts
-            Array.prototype.forEach.call(posts, post => {
-
-                var representation = document.getElementById("representation");
-
-                representation.innerHTML = representation.innerHTML + '<br><br>' +
-                    '<h3 class="blog-post-title" onclick="JavaScript:return actions.edit({\'title\':\'' + post.Title + '\', \'description\':\'' + post.Description + '\', \'id\':\'' + post.Id + '\'});">' + post.Title + '</h3>\n'
-                    + '<p class="blog-post-meta">' + post.Description + '</p>'
-                    + '<button onclick="JavaScript:return actions.delete({\'id\':\'' + post.Id + '\'});">Delete</button>';
-
-            });
+            $.get('/templates/clientsidemaster.hbs', function (data) {
+                console.log(rendermodel);
+                var template = Handlebars.compile(data);
+                $("#representation").html(template(rendermodel));
+            }, 'html');
 
         }
 

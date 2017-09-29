@@ -1,8 +1,9 @@
 ﻿using System;
+using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components
+namespace SamSAFE.Base
 {
-    public class DefaultLogger
+    public class DefaultLogger : ILogger
     {
         public int LoggingLevel { get; set; }
 

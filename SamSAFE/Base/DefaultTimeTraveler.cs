@@ -1,11 +1,11 @@
-﻿using SamSafeCSharp.Helpers;
+﻿using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components
+namespace SamSAFE.Base
 {
-    public class DefaultTimeTraveler
+    public class DefaultTimeTraveler : ITimeTraveler
     {
-        private readonly DefaultSnapshotStore _snapshotStore;
-        private readonly int _cursor;
+        public DefaultSnapshotStore SnapshotStore { get; set; }
+        public int Cursor { get; set; }
 
         //todo
         /* JS code 
@@ -16,8 +16,8 @@ namespace SamSafeCSharp.Components
 
         public DefaultTimeTraveler(DefaultSnapshotStore store = null)
         {
-            _snapshotStore = store ?? new DefaultSnapshotStore();
-            _cursor = -1;
+            SnapshotStore = store ?? new DefaultSnapshotStore();
+            Cursor = -1;
         }
 
 
@@ -81,14 +81,14 @@ namespace SamSafeCSharp.Components
             }) ;*/
         }
 
-        public int SaveSnapshot(Model model, string dataset)
+        public int SaveSnapshot(IModel model, string dataset)
         {
             // TODO check this
-            dynamic snapshot = _snapshotStore.Retrieve(_cursor);
-            var cursor =0;
+            dynamic snapshot = SnapshotStore.Retrieve(Cursor);
+            var cursor = 0;
             if (dataset != null)
             {
-                cursor = cursor +1;
+                cursor = cursor + 1;
                 snapshot = null;
                 snapshot = JsHelpers.DeepCopy(dataset);
             }
@@ -96,7 +96,7 @@ namespace SamSafeCSharp.Components
             if (model != null)
                 snapshot.store = JsHelpers.DeepCopy(model);
 
-            return _snapshotStore.Store(_cursor, snapshot);
+            return SnapshotStore.Store(Cursor, snapshot);
         }
 
         public string GetSnapshot(int i)
@@ -106,11 +106,11 @@ namespace SamSafeCSharp.Components
 
             if (i >= 0)
             {
-                return _snapshotStore.Retrieve(i);
+                return SnapshotStore.Retrieve(i);
             }
             else
             {
-                return _snapshotStore.RetrieveAll().ToString();
+                return SnapshotStore.RetrieveAll().ToString();
             }
         }
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SamSafeCSharp.Components.SAM.Dto;
 using SamSafeCSharp.Helpers;
+using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components
+namespace SamSafeCSharp.Components.SAM
 {
-    public class Model
+    public class Model : IModel
     {
         private readonly IJsonStore _jsonStore;
 
@@ -37,16 +39,16 @@ namespace SamSafeCSharp.Components
 
         public List<BlogPost> Posts { get; }
 
-        public void Init(Action<Model, Action<string>> render)
+        public void Init(Action<IModel, Action<string>> render)
         {
             this.Render = render;
         }
 
-        public void Present(PresenterModel data, Action<string> next)
+        public void Present(IProposalModel proposalData, Action<string> next)
         {
-            if (data == null)
+            if (!(proposalData is ProposalModel data))  //c# pattern matching construct. proposalData is cast into data as ProposalModel
             {
-                data = new PresenterModel(); //Implementation
+                data = new ProposalModel();
             }
 
             if (data.DeletedItemId != 0)
@@ -97,15 +99,14 @@ namespace SamSafeCSharp.Components
 
         }
 
-
-
         public string __token { get; set; }
         public string __session { get; set; }
 
-        private Action<Model, Action<string>> Render { get; set; }
+        private Action<IModel, Action<string>> Render { get; set; }
 
         public int ItemId { get; set; }
-        public State State { get; set; }
+
+        public IState State { get; set; }
 
         public BlogPost LastDeleted { get; set; }
 

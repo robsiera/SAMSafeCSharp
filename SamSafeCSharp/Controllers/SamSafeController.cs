@@ -1,22 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SamSafeCSharp.Components;
+using SamSafeCSharp.Components.SAM;
+using SamSafeCSharp.Components.SAM.Dto;
 using SamSafeCSharp.Helpers;
+using SamSAFE;
+using SamSAFE.Base;
+using SamSAFE.Interfaces;
 
-namespace SafeCSharp
+namespace SamSafeCSharp.Controllers
 {
     [Route("api/[controller]")]
     public class SamSafeController : Controller
     {
         private readonly Safe _safe = new Safe();
 
-        private readonly Model _model;
-        private readonly View _samView;
+        private readonly IModel _model;
+        private readonly IView _view;
 
-        private readonly DefaultTimeTraveler _timeTraveler;
+        private readonly ITimeTraveler _timeTraveler;
         private string _finalRepresantion;
 
         public SamSafeController(IHostingEnvironment hostingEnvironment, IHttpContextAccessor httpContextAccessor)
@@ -27,11 +30,11 @@ namespace SafeCSharp
             Actions actions = new Actions();
             State state = new State();
             this._model = new Model(jsonStore);
-            this._samView = new View();
+            this._view = new View();
 
             TemplateRenderingService.Init(hostingEnvironment);
 
-            _safe.Init(actions, _model, state, _samView);
+            _safe.Init(actions, _model, state, _view);
 
             // use default time traveler
             if (true == false) // change this to enable timetraveling
@@ -92,7 +95,7 @@ namespace SafeCSharp
         [HttpPost]
         public string Present([FromBody] dynamic data)
         {
-            _model.Present((PresenterModel)data, PushRepresentation);
+            _model.Present((ProposalModel)data, PushRepresentation);
             return _finalRepresantion;
         }
 
@@ -110,28 +113,11 @@ namespace SafeCSharp
         public string Init()
         {
             _timeTraveler?.SaveSnapshot(_model, "");
-
-
-            //TODO: Move to model class
-            var id = JsHelpers.orDefault(_model?.LastEdited?.Id.ToString(), "");
-
-            dynamic viewModel = new
-            {
-                titleValue = _model?.LastEdited?.Title.orDefault("Title"),
-                descriptionValue = _model?.LastEdited?.Description.orDefault("Description"),
-                id = id,
-                valAttr = id == "" ? "placeholder" : "value",
-                actionLabel = id == "" ? "Add" : "Save",
-                idElement = id == "" ? "" : $@", 'id':'{id}'",
-                showCancel = id != "",
-                posts = _model.Posts
-            };
-
-            return JsHelpers.JSON.stringify(viewModel);
+            return _view.Init(_model);
         }
 
         [HttpPost("dispatch")]
-        public string Dispatch([FromBody] PresenterModel data)
+        public string Dispatch([FromBody] ProposalModel data)
         {
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
             data.__token = safeToken;
