@@ -13,8 +13,8 @@ namespace SamSAFE.Interfaces
 
         void Present(IProposalModel data, Action<string> next);
 
-        List<IItem> Posts { get; }
+       // List<IItem> Posts { get; }
 
-        IItem LastEdited { get; set; }
+       // IItem LastEdited { get; set; }
     }
 }

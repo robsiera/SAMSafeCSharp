@@ -14,13 +14,13 @@ namespace SamSafeCSharp.Components.SAM
         public Model(IJsonStore jsonStore)
         {
             _jsonStore = jsonStore;
-            var sessionPosts = _jsonStore.GetObjectFromJson<List<IItem>>("sessionPosts");
+            var sessionPosts = _jsonStore.GetObjectFromJson<List<BlogPost>>("sessionPosts");
             Posts = sessionPosts ?? GetDefaultPosts();
         }
 
-        private static List<IItem> GetDefaultPosts()
+        private static List<BlogPost> GetDefaultPosts()
         {
-            return new List<IItem>()
+            return new List<BlogPost>()
             {
                 new BlogPost()
                 {
@@ -37,18 +37,18 @@ namespace SamSafeCSharp.Components.SAM
             };
         }
 
-        public List<IItem> Posts { get; }
+        public List<BlogPost> Posts { get; }
 
         public void Init(Action<IModel, Action<string>> render)
         {
             this.Render = render;
         }
 
-        public void Present(IProposalModel data, Action<string> next)
+        public void Present(IProposalModel proposalData, Action<string> next)
         {
-            if (data == null)
+            if (!(proposalData is ProposalModel data))  //c# pattern matching construct. proposalData is cast into data as ProposalModel
             {
-                data = new ProposalModel(); //Implementation
+                data = new ProposalModel();
             }
 
             if (data.DeletedItemId != 0)
@@ -105,11 +105,12 @@ namespace SamSafeCSharp.Components.SAM
         private Action<IModel, Action<string>> Render { get; set; }
 
         public int ItemId { get; set; }
+
         public IState State { get; set; }
 
-        public IItem LastDeleted { get; set; }
+        public BlogPost LastDeleted { get; set; }
 
-        public IItem LastEdited { get; set; }
+        public BlogPost LastEdited { get; set; }
 
     }
 }

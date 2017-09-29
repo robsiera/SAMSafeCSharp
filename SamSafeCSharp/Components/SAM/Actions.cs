@@ -20,7 +20,7 @@ namespace SamSafeCSharp.Components.SAM
 
         public Dictionary<string, string> Intents { get; set; }
 
-        public Dictionary<string, Action<IProposalModel, Action<string>>> ActionList { get; set; }
+        public Dictionary<string, Action<ProposalModel, Action<string>>> ActionList { get; set; }
 
         public Actions()
         {
@@ -32,7 +32,7 @@ namespace SamSafeCSharp.Components.SAM
                 { "cancel", "cancel" }
             };
 
-            ActionList = new Dictionary<string, Action<IProposalModel, Action<string>>>
+            ActionList = new Dictionary<string, Action<ProposalModel, Action<string>>>
             {
                 { "edit", Edit },
                 { "save", Save },
@@ -46,6 +46,16 @@ namespace SamSafeCSharp.Components.SAM
             this._present = present ?? DefaultPresent;
         }
 
+        public bool ActionExists(string actionKey)
+        {
+            return ActionList.ContainsKey(actionKey);
+        }
+
+        public void Handle(string action, IProposalModel data, Action<string> next)
+        {
+            ActionList[action](data as ProposalModel, next);
+        }
+
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
@@ -55,13 +65,13 @@ namespace SamSafeCSharp.Components.SAM
             throw new NotImplementedException("Present function not properly initialized?");
         }
 
-        public void Edit(IProposalModel data, Action<string> next)
+        public void Edit(ProposalModel data, Action<string> next)
         {
             data.LastEdited = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
             _present(data, next);
         }
 
-        public void Save(IProposalModel data, Action<string> next)
+        public void Save(ProposalModel data, Action<string> next)
         {
             data.Item = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
 
@@ -85,7 +95,7 @@ namespace SamSafeCSharp.Components.SAM
             }
         }
 
-        public void Delete(IProposalModel data, Action<string> next)
+        public void Delete(ProposalModel data, Action<string> next)
         {
             data.DeletedItemId = data.Id;
             _present(data, next);

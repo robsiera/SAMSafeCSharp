@@ -178,11 +178,11 @@ namespace SamSAFE
             else
             {
 
-                if (this._actions.ActionList.ContainsKey(action))
+                if (this._actions.ActionExists(action))
                 {
                     // dispatch action
                     this._logger.Info("invoking action            " + data.ToString());
-                    this._actions.ActionList[action](data, next);
+                    this._actions.Handle(action, data, next);
                 }
                 else
                 {

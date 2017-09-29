@@ -26,8 +26,10 @@ namespace SamSafeCSharp.Components.SAM
             return Ready(model);
         }
 
-        public string Ready(IModel model, Dictionary<string, string> intents = null)
+        public string Ready(IModel iModel, Dictionary<string, string> intents = null)
         {
+            var model = iModel as Model;
+
             if (intents == null)
                 intents = _intents; // todo: intents never used??
 
