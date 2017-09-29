@@ -6,24 +6,8 @@
 <body>
     <script src="https://unpkg.com/vue"></script>
 
-    <div id="launcher">
-        <div v-if="readyState">
-            <p>Counter: {{ counter }} </p>
-            <button type="submit" v-on:click="start()" value="Start">Start</button>
-        </div>
-
-        <div v-if="countingState">
-            <p>Count down: {{ counter }}</p>
-            <button type="submit" v-on:click="abort()" value="Abort">Abort</button>
-        </div>
-
-        <div v-if="abortedState">
-            <p>Aborted at: {{ counter }}</p>
-        </div>
-
-        <div v-if="launchedState">
-            <p>Launched</p>
-        </div>
+    <div id="blogplaceholder">
+ 
     </div>
 
 
@@ -31,65 +15,52 @@
         var COUNTER_MAX = 10;
 
         let vue = new Vue({
-            el: '#launcher',
+            el: '#blogplaceholder',
 
             // Model
             data: {
-                counter: COUNTER_MAX,
-                started: false,
-                launched: false,
-                aborted: false
+
             },
 
 
             methods: {
                 // actions
-                start: function (data) {
-                    data = data || { started: true };
+                edit: function (data) {
+                    data = data || { edited: true };
                     this.present(data);
                 },
 
-                abort: function (data) {
-                    data = data || { aborted: true };
+                delete: function (data) {
+                    data = data || { deleted: true };
                     this.present(data);
                 },
 
-                launch: function (data) {
-                    data = data || { launched: true };
+                save: function (data) {
+                    data = data || { saved: true };
                     this.present(data);
                 },
 
-                decrement: function (data) {
-
-                    data = data || { by: 1 };
-                    var by = data.by;
-                    var self = this;
-
-                    setTimeout(function () {
-                        self.present({ by: by });
-                    },
-                        1000);
+                cancel: function (data) {
+                    data = data || { cancelled: true };
+                    this.present(data);
                 },
+
+
 
                 present: function (proposal) {
                     console.log('present');
-                    if (proposal.started !== undefined) {
-                        this.started = proposal.started;
+                    if (proposal.edited !== undefined) {
+                        this.edited = proposal.edited;
                     }
 
-                    if (proposal.launched !== undefined) {
-                        this.launched = proposal.launched;
+                    if (proposal.saved !== undefined) {
+                        this.saved = proposal.saved;
                     }
 
-                    if (proposal.aborted !== undefined) {
-                        this.aborted = proposal.aborted;
+                    if (proposal.deleted !== undefined) {
+                        this.deleted = proposal.deleted;
                     }
 
-                    if (proposal.by !== undefined) {
-                        if (!this.aborted) {
-                            this.counter -= proposal.by;
-                        }
-                    }
 
                     this.state();
                 },
@@ -106,18 +77,6 @@
                 nextAction: function () {
                     console.log('nextAction');
 
-                    if (this.countingState) {
-                        if (this.counter > 0) {
-                            // next action is count down (decrement)
-                            this.decrement({ by: 1 });
-                        } else {
-                            // next action is launch
-                            this.launch({ launched: true });
-                        }
-                    } else {
-                        // no next action
-                        console.log('that\'s all folks');
-                    }
                 }
             },
 
@@ -125,27 +84,27 @@
 
                 // State
                 readyState: function () {
-                    return ((this.counter === COUNTER_MAX) && !this.started && !this.launched && !this.aborted);
+                    return ((this.counter === COUNTER_MAX) && !this.edited && !this.saved && !this.deleted);
                 },
 
                 countingState: function () {
                     return ((this.counter <= COUNTER_MAX) &&
                         (this.counter >= 0) &&
-                        this.started &&
-                        !this.launched &&
-                        !this.aborted);
+                        this.edited &&
+                        !this.saved &&
+                        !this.deleted);
                 },
 
-                launchedState: function () {
-                    return ((this.counter == 0) && this.started && this.launched && !this.aborted);
+                savedState: function () {
+                    return ((this.counter == 0) && this.edited && this.saved && !this.deleted);
                 },
 
-                abortedState: function () {
+                deletedState: function () {
                     return ((this.counter <= COUNTER_MAX) &&
                         (this.counter >= 0) &&
-                        this.started &&
-                        !this.launched &&
-                        this.aborted);
+                        this.edited &&
+                        !this.saved &&
+                        this.deleted);
                 }
             }
         });
