@@ -87,7 +87,7 @@ namespace SamSafeCSharp.Components.SAM
                 else
                 {
                     // new item
-                    data.Item.Id = Posts.Max(x => x.Id) + 1;
+                    data.Item.Id = Posts.Count > 0 ? Posts.Max(x => x.Id) + 1 : 1;
                     Posts.Add(data.Item);
                 }
             }

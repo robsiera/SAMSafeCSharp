@@ -14,31 +14,53 @@
 
     <div id="blogplaceholder">
 
-        <div class="blog-header">
-            <h1 class="blog-title" v-once>{{constants.blogTitle}}</h1>
-            <p class="lead blog-description" v-once>{{constants.blogDescription}}</p>
+        <div class="blog-masthead">
+            <div class="container">
+                <nav class="blog-nav">
+                    <a class="blog-nav-item active" href="#">Home</a>
+                    <a class="blog-nav-item" href="http://sam.js.org">About</a>
+                </nav>
+            </div>
         </div>
 
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title" v-once>{{constants.blogTitle}}</h1>
+                <p class="lead blog-description" v-once>{{constants.blogDescription}}</p>
+            </div>
 
-        <template v-for="post in viewModel.posts">
-            <br>
-            <br>
-            <h3 class="blog-post-title">{{post.Title}}</h3>
-            <p class="blog-post-meta">{{post.Description}}</p> 
-            <button v-on:click="remove()">Delete</button>
-           
-        </template>
+            <div class="row">
 
-        <br>
-        <br>
-        <div class="mdl-cell mdl-cell--6-col">
-            <input id="title" type="text" class="form-control" :placeholder="viewModel.titleValue"><br>
-            <input id="description" type="text" class="form-control" :placeholder="viewModel.descriptionValue"><br>
-            <button id="save"  v-on:click="" v-text="viewModel.actionLabel"></button>
+                <div class="col-sm-8 blog-main">
 
-            <button v-if="viewModel.showCancel" id="cancel" v-on:click="">Cancel</button>
+                    <div v-for="post in viewModel.posts">
+                        <br>
+                        <br>
+                        <h3 class="blog-post-title">{{post.Title}}</h3>
+                        <p class="blog-post-meta">{{post.Description}}</p>
+                        <button v-on:click="remove({ 'id': post.Id })">Delete</button>
+                    </div>
 
+                    <br>
+                    <br>
+                    <div class="mdl-cell mdl-cell--6-col">
+                        <input v-model="newPostTitle" id="title" type="text" class="form-control" :placeholder="viewModel.titleValue"><br>
+                        <input v-model="newPostDescription" id="description" type="text" class="form-control" :placeholder="viewModel.descriptionValue"><br>
+                        <button id="save" v-on:click="save({ 'title': newPostTitle, 'description': newPostDescription })" v-text="viewModel.actionLabel"></button>
+
+                        <button v-if="viewModel.showCancel" id="cancel" v-on:click="">Cancel</button>
+
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <footer class="blog-footer">
+            <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>
+        </footer>
 
     </div>
 
@@ -47,8 +69,9 @@
         var COUNTER_MAX = 10;
 
         let vue = new Vue({
+
             el: '#blogplaceholder',
-            
+
             // Model
             data: {
                 constants: {
@@ -61,28 +84,31 @@
 
                 endpoint: 'http://localhost:2673',
 
+                newPostTitle: '',
+
+                newPostDescription: '',
+
+
                 viewModel: {
 
                     posts: [
-                        { Title: 'Title 1', Description: 'Description 1' },
-                        { Title: 'Title 2', Description: 'Description 1' }
                     ],
 
                     showCancel: false,
 
-                    titleValue: "",
+                    titleValue: '',
 
-                    descriptionValue: "",
+                    descriptionValue: '',
 
-                    id: "",
+                    id: '',
 
-                    valAttr: "",
+                    valAttr: '',
 
-                    actionLabel: "",
+                    actionLabel: '',
 
-                    idElement: "",
+                    idElement: '',
 
-                    intents: "",
+                    intents: '',
                 }
             },
 
@@ -94,7 +120,7 @@
                 }
                 else if (this.samVariantToUse === 'server') {
                     // server side
-                    //actions.handle = dispatch;  // set the handler of the actions the dispatcher function.
+                    this.handle = this.dispatch;  // set the handler of the actions the dispatcher function.
                     var model = this.viewModel;
 
                     axios.get(this.endpoint + '/api/samsafe/init')
@@ -134,16 +160,17 @@
                 },
 
                 save: function (data) {
-                    // data.item = {title: data.title, description: data.description, id: data.id || null} ;
                     var proposal = { item: data };
                     proposal.__action = 'save';
-                    actions.handle(proposal);
+                    this.handle(proposal);
+                    this.newPostTitle = '';
+                    this.newPostDescription = '';
                     return false;
                 },
 
                 remove: function (data) {
                     data.__action = 'delete';
-                    actions.handle(data);
+                    this.handle(data);
                     return false;
                 },
 
@@ -152,6 +179,37 @@
                     data.__action = 'cancel';
                     actions.handle(data);
                     return false;
+                },
+
+                dispatch: function (data) {
+
+                    if (this.samVariantToUse === 'client') {
+                        // client side
+                        model.present(data);
+                    }
+                    else if (this.samVariantToUse === 'server') {
+                        // server side
+
+                        var model = this.viewModel;
+
+                        axios.post(this.endpoint + '/api/samsafe/dispatch', data,
+                            { headers: { 'Content-Type': 'application/json' } })
+                            .then(response => {
+                                // JSON responses are automatically parsed.
+                                model.posts = response.data.posts;
+                                model.showCancel = response.data.showCancel;
+                                model.titleValue = response.data.titleValue;
+                                model.descriptionValue = response.data.descriptionValue;
+                                model.id = response.data.id;
+                                model.valAttr = response.data.valAttr;
+                                model.actionLabel = response.data.actionLabel;
+                                model.idElement = response.data.idElement;
+                                model.intents = response.data.intents;
+                            })
+                            .catch(e => {
+                                console.log('Oops something went wrong!')
+                            });
+                    }
                 }
             },
 
