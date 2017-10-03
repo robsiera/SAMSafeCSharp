@@ -76,16 +76,12 @@
             data: {
                 constants: {
                     blogTitle: 'The SAM Pattern Blog',
-
                     blogDescription: 'The official blog sample impleting the SAM Pattern'
                 },
 
                 samVariantToUse: 'server',
-
                 endpoint: 'http://localhost:2673',
-
                 newPostTitle: '',
-
                 newPostDescription: '',
 
 
@@ -93,21 +89,13 @@
 
                     posts: [
                     ],
-
                     showCancel: false,
-
                     titleValue: '',
-
                     descriptionValue: '',
-
                     id: '',
-
                     valAttr: '',
-
                     actionLabel: '',
-
                     idElement: '',
-
                     intents: ''
                 }
             },
@@ -116,31 +104,31 @@
                 // `this` points to the vm instance
                 if (this.samVariantToUse === 'client') {
                     // client side
-                    view.display(view.init(model));
+                    view.display(view.init(this.viewModel));
                 }
                 else if (this.samVariantToUse === 'server') {
                     // server side
                     this.handle = this.dispatch;  // set the handler of the actions the dispatcher function.
-                    var model = this.viewModel;
+                    var viewModel = this.viewModel;
 
                     axios.get(this.endpoint + '/api/samsafe/init')
                         .then(response => {
                             // JSON responses are automatically parsed.
-                            model.posts = response.data.posts;
-                            model.showCancel = response.data.showCancel;
-                            model.titleValue = response.data.titleValue;
-                            model.descriptionValue = response.data.descriptionValue;
-                            model.id = response.data.id;
-                            model.valAttr = response.data.valAttr;
-                            model.actionLabel = response.data.actionLabel;
-                            model.idElement = response.data.idElement;
-                            model.intents = response.data.intents;
-                            console.log(model.posts);
+                            viewModel.posts = response.data.posts;
+                            viewModel.showCancel = response.data.showCancel;
+                            viewModel.titleValue = response.data.titleValue;
+                            viewModel.descriptionValue = response.data.descriptionValue;
+                            viewModel.id = response.data.id;
+                            viewModel.valAttr = response.data.valAttr;
+                            viewModel.actionLabel = response.data.actionLabel;
+                            viewModel.idElement = response.data.idElement;
+                            viewModel.intents = response.data.intents;
+                            console.log(viewModel.posts);
                         })
                         .catch(e => {
                             console.log('Oops something went wrong!');
                         });
-                    console.log(model.posts);
+                    console.log(viewModel.posts);
                 }
             },
 
@@ -216,29 +204,7 @@
             computed: {
 
                 // State
-                readyState: function () {
-                    return ((this.counter === COUNTER_MAX) && !this.edited && !this.saved && !this.deleted);
-                },
 
-                countingState: function () {
-                    return ((this.counter <= COUNTER_MAX) &&
-                        (this.counter >= 0) &&
-                        this.edited &&
-                        !this.saved &&
-                        !this.deleted);
-                },
-
-                savedState: function () {
-                    return ((this.counter == 0) && this.edited && this.saved && !this.deleted);
-                },
-
-                deletedState: function () {
-                    return ((this.counter <= COUNTER_MAX) &&
-                        (this.counter >= 0) &&
-                        this.edited &&
-                        !this.saved &&
-                        this.deleted);
-                }
             }
         });
 
