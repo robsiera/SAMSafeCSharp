@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "packages": [
+    {
+      "provider": "cdnjs",
+      "id": "vue@2.4.4",
+      "path": "wwwroot/scripts/",
+      "files": [
+        "vue.min.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "id": "vuex@2.4.1",
+      "path": "wwwroot/scripts/",
+      "files": [
+        "vuex.min.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "id": "axios@0.16.2",
+      "path": "wwwroot/scripts/",
+      "files": [
+        "axios.min.js"
+      ]
+    }
+  ]
+}
