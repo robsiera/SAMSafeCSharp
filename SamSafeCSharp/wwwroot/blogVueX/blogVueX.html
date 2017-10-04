@@ -12,8 +12,6 @@
     <script src="/scripts/vuex.min.js"></script>
     <script src="/scripts/axios.min.js"></script>
 
-    <div id="app"></div>
-
     <div id="blogplaceholder">
 
         <div class="blog-masthead">
@@ -30,45 +28,95 @@
                 <h1 class="blog-title" v-once>{{constants.blogTitle}}</h1>
                 <p class="lead blog-description" v-once>{{constants.blogDescription}}</p>
             </div>
-
-            <div class="row">
-
-                <div class="col-sm-8 blog-main">
-
-                    <div v-for="post in viewModel.posts">
-                        <br>
-                        <br>
-                        <h3 class="blog-post-title">{{post.Title}}</h3>
-                        <p class="blog-post-meta">{{post.Description}}</p>
-                        <button v-on:click="remove({ 'id': post.Id })">Delete</button>
-                    </div>
-
-                    <br>
-                    <br>
-                    <div class="mdl-cell mdl-cell--6-col">
-                        <input v-model="newPostTitle" id="title" type="text" class="form-control" :placeholder="viewModel.titleValue"><br>
-                        <input v-model="newPostDescription" id="description" type="text" class="form-control" :placeholder="viewModel.descriptionValue"><br>
-                        <button id="save" v-on:click="save({ 'title': newPostTitle, 'description': newPostDescription })" v-text="viewModel.actionLabel"></button>
-
-                        <button v-if="viewModel.showCancel" id="cancel" v-on:click="">Cancel</button>
-
-                    </div>
-                </div>
-            </div>
+            <post v-for="post in viewModel.posts" :item="post"></post>
+            <add-post :model="viewModel"></add-post>
         </div>
-
-        <footer class="blog-footer">
-            <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-            <p>
-                <a href="#">Back to top</a>
-            </p>
-        </footer>
-
     </div>
 
+    <!-- Templates -->
+
+    <template id="post">
+        <div>
+            <br>
+            <br>
+            <h3 class="blog-post-title">{{post.Title}}</h3>
+            <p class="blog-post-meta">{{post.Description}}</p>
+            <button v-on:click="remove({ 'id': post.Id })">Delete</button>
+        </div>
+    </template>
+
+    <template id="addpost">
+        <div>
+            <br>
+            <br>
+            <div class="mdl-cell mdl-cell--6-col">
+                <input v-model="newPostTitle" id="title" type="text" class="form-control" :placeholder="viewModel.titleValue"><br>
+                <input v-model="newPostDescription" id="description" type="text" class="form-control" :placeholder="viewModel.descriptionValue"><br>
+                <button id="save" v-on:click="save({ 'title': newPostTitle, 'description': newPostDescription })" v-text="viewModel.actionLabel"></button>
+
+                <button v-if="viewModel.showCancel" id="cancel" v-on:click="">Cancel</button>
+
+            </div>
+        </div>
+    </template>
 
     <script>
-        var COUNTER_MAX = 10;
+
+        /* Components */
+
+        Vue.component('post', {
+
+            template: '#post',
+
+            props: ['item'],
+
+            data() {
+                return {
+                    post: this.item
+                }
+            },
+
+            methods: {
+
+                remove: function (data) {
+                    data.__action = 'delete';
+                    this.handle(data);
+                    return false;
+                },
+            }
+        });
+
+        Vue.component('add-post', {
+
+            template: '#addpost',
+
+            props: ['model'],
+
+            data() {
+                return {
+
+                    newPostTitle: '',
+                    newPostDescription: '',
+                    viewModel: this.model
+
+                }
+            },
+
+            methods: {
+
+                save: function (data) {
+                    var proposal = { item: data };
+                    proposal.__action = 'save';
+                    this.handle(proposal);
+                    this.newPostTitle = '';
+                    this.newPostDescription = '';
+                    return false;
+                }
+            }
+
+        });
+
+        /* Starting app */
 
         let vue = new Vue({
 
@@ -82,10 +130,8 @@
                 },
 
                 samVariantToUse: 'server',
-                endpoint: 'http://localhost:2673',
-                newPostTitle: '',
-                newPostDescription: '',
 
+                endpoint: 'http://localhost:2673',
 
                 viewModel: {
 
@@ -103,6 +149,7 @@
             },
 
             created: function () {
+
                 // `this` points to the vm instance
                 if (this.samVariantToUse === 'client') {
                     // client side
@@ -136,41 +183,6 @@
 
             methods: {
 
-                handle: function (data) {
-                    // default action handler.
-                    // should be implemented or set to a delegate (eg dispatcher)
-                    throw new Error('Not implemented');
-                },
-
-                edit: function (data) {
-                    // data.lastEdited = {title: data.title,  description: data.description, id: data.id } ;
-                    data.__action = 'edit';
-                    actions.handle(data);
-                    return false;
-                },
-
-                save: function (data) {
-                    var proposal = { item: data };
-                    proposal.__action = 'save';
-                    this.handle(proposal);
-                    this.newPostTitle = '';
-                    this.newPostDescription = '';
-                    return false;
-                },
-
-                remove: function (data) {
-                    data.__action = 'delete';
-                    this.handle(data);
-                    return false;
-                },
-
-                cancel: function (data) {
-                    data = data || {};
-                    data.__action = 'cancel';
-                    actions.handle(data);
-                    return false;
-                },
-
                 dispatch: function (data) {
 
                     if (this.samVariantToUse === 'client') {
@@ -201,12 +213,6 @@
                             });
                     }
                 }
-            },
-
-            computed: {
-
-                // State
-
             }
         });
 
