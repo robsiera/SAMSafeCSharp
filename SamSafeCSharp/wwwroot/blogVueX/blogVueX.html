@@ -28,8 +28,8 @@
                 <h1 class="blog-title" v-once>{{constants.blogTitle}}</h1>
                 <p class="lead blog-description" v-once>{{constants.blogDescription}}</p>
             </div>
-            <post v-for="post in viewModel.posts" :item="post"></post>
-            <add-post :model="viewModel"></add-post>
+            <post v-for="post in store.getters.getPosts" :item="post"></post>
+            <add-post></add-post>
         </div>
     </div>
 
@@ -50,11 +50,11 @@
             <br>
             <br>
             <div class="mdl-cell mdl-cell--6-col">
-                <input v-model="newPostTitle" id="title" type="text" class="form-control" :placeholder="viewModel.titleValue"><br>
-                <input v-model="newPostDescription" id="description" type="text" class="form-control" :placeholder="viewModel.descriptionValue"><br>
-                <button id="save" v-on:click="save({ 'title': newPostTitle, 'description': newPostDescription })" v-text="viewModel.actionLabel"></button>
+                <input v-model="newPostTitle" id="title" type="text" class="form-control" :placeholder="this.$store.getters.getTitleValue"><br>
+                <input v-model="newPostDescription" id="description" type="text" class="form-control" :placeholder="this.$store.getters.getDescriptionValue"><br>
+                <button id="save" v-on:click="save({ 'title': newPostTitle, 'description': newPostDescription })" v-text="this.$store.getters.getActionLabel"></button>
 
-                <button v-if="viewModel.showCancel" id="cancel" v-on:click="">Cancel</button>
+                <button v-if="this.$store.getters.showCancel" id="cancel" v-on:click="">Cancel</button>
 
             </div>
         </div>
@@ -77,11 +77,9 @@
             },
 
             methods: {
-
+                //Don't rename it to delete it shouldn't work
                 remove: function (data) {
-                    data.__action = 'delete';
-                    this.handle(data);
-                    return false;
+                    this.$store.dispatch('delete', data);
                 },
             }
         });
@@ -90,53 +88,35 @@
 
             template: '#addpost',
 
-            props: ['model'],
-
             data() {
                 return {
-
+                    //TODO: Check this
                     newPostTitle: '',
                     newPostDescription: '',
-                    viewModel: this.model
-
                 }
             },
 
             methods: {
 
                 save: function (data) {
-                    var proposal = { item: data };
-                    proposal.__action = 'save';
-                    this.handle(proposal);
-                    this.newPostTitle = '';
+                    this.$store.dispatch('save', data);
                     this.newPostDescription = '';
-                    return false;
+                    this.newPostTitle = '';
                 }
             }
 
         });
 
-        /* Starting app */
+        /* Store */
 
-        let vue = new Vue({
+        const store = new Vuex.Store({
 
-            el: '#blogplaceholder',
-
-            // Model
-            data: {
-                constants: {
-                    blogTitle: 'The SAM Pattern Blog',
-                    blogDescription: 'The official blog sample impleting the SAM Pattern'
-                },
-
-                samVariantToUse: 'server',
-
-                endpoint: 'http://localhost:2673',
+            state: {
+                count: 0,
 
                 viewModel: {
 
-                    posts: [
-                    ],
+                    posts: [],
                     showCancel: false,
                     titleValue: '',
                     descriptionValue: '',
@@ -148,72 +128,93 @@
                 }
             },
 
-            created: function () {
+            getters: {
 
-                // `this` points to the vm instance
-                if (this.samVariantToUse === 'client') {
-                    // client side
-                    view.display(view.init(this.viewModel));
+                getPosts: state => {
+                    return state.viewModel.posts
+                },
+
+                getActionLabel: state => {
+                    return state.viewModel.actionLabel
+                },
+
+                getTitleValue: state => {
+                    return state.viewModel.titleValue
+                },
+
+                getDescriptionValue: state => {
+                    return state.viewModel.descriptionValue
+                },
+
+                getShowCancel: state => {
+                    return state.viewModel.showCancel
                 }
-                else if (this.samVariantToUse === 'server') {
-                    // server side
-                    this.handle = this.dispatch;  // set the handler of the actions the dispatcher function.
-                    var viewModel = this.viewModel;
+            },
 
-                    axios.get(this.endpoint + '/api/samsafe/init')
+            actions: {
+
+                initialize({ commit }) {
+                    axios.get('http://localhost:2673/api/samsafe/init')
                         .then(response => {
-                            // JSON responses are automatically parsed.
-                            viewModel.posts = response.data.posts;
-                            viewModel.showCancel = response.data.showCancel;
-                            viewModel.titleValue = response.data.titleValue;
-                            viewModel.descriptionValue = response.data.descriptionValue;
-                            viewModel.id = response.data.id;
-                            viewModel.valAttr = response.data.valAttr;
-                            viewModel.actionLabel = response.data.actionLabel;
-                            viewModel.idElement = response.data.idElement;
-                            viewModel.intents = response.data.intents;
-                            console.log(viewModel.posts);
+                            commit('updatemodel', response.data);
+                        }).catch(e => {
+                            console.log('Oops something went wrong!');
+                        });
+                },
+
+                save({ commit }, data) {  
+                    axios.post('http://localhost:2673/api/samsafe/dispatch', { item: data, __action: 'save' },
+                        { headers: { 'Content-Type': 'application/json' } })
+                        .then(response => {
+                            commit('updatemodel', response.data);
                         })
                         .catch(e => {
                             console.log('Oops something went wrong!');
                         });
-                    console.log(viewModel.posts);
-                }
+                },
+
+                delete({ commit }, data) {
+                    data.__action = 'delete';
+                    axios.post('http://localhost:2673/api/samsafe/dispatch', data,
+                        { headers: { 'Content-Type': 'application/json' } })
+                        .then(response => {
+                            commit('updatemodel', response.data);
+                        })
+                        .catch(e => {
+                            console.log('Oops something went wrong!');
+                        });
+                },
+
             },
 
-            methods: {
+            mutations: {
 
-                dispatch: function (data) {
-
-                    if (this.samVariantToUse === 'client') {
-                        // client side
-                        model.present(data);
-                    }
-                    else if (this.samVariantToUse === 'server') {
-                        // server side
-
-                        var model = this.viewModel;
-
-                        axios.post(this.endpoint + '/api/samsafe/dispatch', data,
-                            { headers: { 'Content-Type': 'application/json' } })
-                            .then(response => {
-                                // JSON responses are automatically parsed.
-                                model.posts = response.data.posts;
-                                model.showCancel = response.data.showCancel;
-                                model.titleValue = response.data.titleValue;
-                                model.descriptionValue = response.data.descriptionValue;
-                                model.id = response.data.id;
-                                model.valAttr = response.data.valAttr;
-                                model.actionLabel = response.data.actionLabel;
-                                model.idElement = response.data.idElement;
-                                model.intents = response.data.intents;
-                            })
-                            .catch(e => {
-                                console.log('Oops something went wrong!');
-                            });
-                    }
-                }
+                updatemodel(state, data) {
+                    state.viewModel = data;
+                },
+             
             }
+        });
+
+        /* Starting app */
+
+        let vue = new Vue({
+
+            el: '#blogplaceholder',
+
+            store,
+
+            data: {
+                constants: {
+                    blogTitle: 'The SAM Pattern Blog',
+                    blogDescription: 'The official blog sample impleting the SAM Pattern',
+                },
+            },
+
+            created: function () {
+                this.$store.dispatch('initialize') 
+            },
+          
         });
 
     </script>
