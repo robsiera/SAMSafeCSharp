@@ -28,8 +28,8 @@
                 <h1 class="blog-title" v-once>{{constants.blogTitle}}</h1>
                 <p class="lead blog-description" v-once>{{constants.blogDescription}}</p>
             </div>
-            <post v-for="post in store.getters.getPosts" :item="post"></post>
-            <add-post></add-post>
+            <hc-post v-for="post in store.getters.getPosts" :item="post"></hc-post>
+            <hc-add-post></hc-add-post>
         </div>
     </div>
 
@@ -65,7 +65,7 @@
 
         /* Components */
 
-        Vue.component('post', {
+        Vue.component('hc-post', {
 
             template: '#post',
 
@@ -85,7 +85,7 @@
             }
         });
 
-        Vue.component('add-post', {
+        Vue.component('hc-add-post', {
 
             template: '#addpost',
 
