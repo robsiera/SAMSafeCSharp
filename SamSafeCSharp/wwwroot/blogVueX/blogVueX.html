@@ -33,6 +33,7 @@
         </div>
     </div>
 
+
     <!-- Templates -->
 
     <template id="post">
@@ -77,7 +78,7 @@
             },
 
             methods: {
-                //Don't rename it to delete it shouldn't work
+                //Don't rename it to 'delete' because then it doesn't work anymore (why?)
                 remove: function (data) {
                     this.$store.dispatch('delete', data);
                 },
@@ -131,23 +132,23 @@
             getters: {
 
                 getPosts: state => {
-                    return state.viewModel.posts
+                    return state.viewModel.posts;
                 },
 
                 getActionLabel: state => {
-                    return state.viewModel.actionLabel
+                    return state.viewModel.actionLabel;
                 },
 
                 getTitleValue: state => {
-                    return state.viewModel.titleValue
+                    return state.viewModel.titleValue;
                 },
 
                 getDescriptionValue: state => {
-                    return state.viewModel.descriptionValue
+                    return state.viewModel.descriptionValue;
                 },
 
                 getShowCancel: state => {
-                    return state.viewModel.showCancel
+                    return state.viewModel.showCancel;
                 }
             },
 
@@ -162,7 +163,7 @@
                         });
                 },
 
-                save({ commit }, data) {  
+                save({ commit }, data) {
                     axios.post('http://localhost:2673/api/samsafe/dispatch', { item: data, __action: 'save' },
                         { headers: { 'Content-Type': 'application/json' } })
                         .then(response => {
@@ -192,7 +193,7 @@
                 updatemodel(state, data) {
                     state.viewModel = data;
                 },
-             
+
             }
         });
 
@@ -207,14 +208,14 @@
             data: {
                 constants: {
                     blogTitle: 'The SAM Pattern Blog',
-                    blogDescription: 'The official blog sample impleting the SAM Pattern',
-                },
+                    blogDescription: 'The official blog sample impleting the SAM Pattern'
+                }
             },
 
             created: function () {
-                this.$store.dispatch('initialize') 
-            },
-          
+                this.$store.dispatch('initialize');
+            }
+
         });
 
     </script>
