@@ -114,7 +114,7 @@ namespace SamSafeCSharp.Controllers
             payload.__token = safeToken;
 
             Action<string> nap = PushRepresentation;
-            _safe.Dispatch(actionInfo, nap);
+            _safe.Dispatch(payload.__action, payload, nap);
 
             return _finalRepresantion;
         }
