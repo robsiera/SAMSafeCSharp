@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SamSafeCSharp.Components.SAM.Dto;
+using SamSAFE.Base;
 using SamSAFE.Interfaces;
 
 namespace SamSafeCSharp.Components.SAM
@@ -20,7 +21,7 @@ namespace SamSafeCSharp.Components.SAM
 
         public Dictionary<string, string> Intents { get; set; }
 
-        public Dictionary<string, Action<ProposalModel, Action<string>>> ActionList { get; set; }
+        public Dictionary<string, Action<ActionPayload, Action<string>>> ActionList { get; }
 
         public Actions()
         {
@@ -32,7 +33,7 @@ namespace SamSafeCSharp.Components.SAM
                 { "cancel", "cancel" }
             };
 
-            ActionList = new Dictionary<string, Action<ProposalModel, Action<string>>>
+            ActionList = new Dictionary<string, Action<ActionPayload, Action<string>>>
             {
                 { "edit", Edit },
                 { "save", Save },
@@ -51,9 +52,9 @@ namespace SamSafeCSharp.Components.SAM
             return ActionList.ContainsKey(actionKey);
         }
 
-        public void Handle(string action, IProposalModel data, Action<string> next)
+        public void Handle(ActionInfo actioninfo, Action<string> next)
         {
-            ActionList[action](data as ProposalModel, next);
+            ActionList[actioninfo.Name](actioninfo.Data as ActionPayload, next);
         }
 
         /// <summary>
@@ -65,15 +66,31 @@ namespace SamSafeCSharp.Components.SAM
             throw new NotImplementedException("Present function not properly initialized?");
         }
 
-        public void Edit(ProposalModel data, Action<string> next)
+        private void Edit(ActionPayload data, Action<string> next)
         {
-            data.LastEdited = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
-            _present(data, next);
+            var proposal = new ProposalModel
+            {
+                LastEdited = new BlogPost
+                {
+                    Title = data.Item.Title,
+                    Description = data.Item.Description,
+                    Id = data.Item.Id
+                }
+            };
+            _present(proposal, next);
         }
 
-        public void Save(ProposalModel data, Action<string> next)
+        private void Save(ActionPayload data, Action<string> next)
         {
-            data.Item = new BlogPost { Title = data.Item.Title, Description = data.Item.Description, Id = data.Item.Id };
+            var proposal = new ProposalModel
+            {
+                Item = new BlogPost
+                {
+                    Title = data.Item.Title,
+                    Description = data.Item.Description,
+                    Id = data.Item.Id
+                }
+            };
 
             if (data.Item.Id > 0)
             {
@@ -86,24 +103,28 @@ namespace SamSafeCSharp.Components.SAM
 
                 // slow save simulation not yet implemented in C#
                 // save normally
-                _present(data, next);
+                _present(proposal, next);
             }
             else
             {
                 // proceed as normal when created a new item
-                _present(data, next);
+                _present(proposal, next);
             }
         }
 
-        public void Delete(ProposalModel data, Action<string> next)
+        private void Delete(ActionPayload data, Action<string> next)
         {
-            data.DeletedItemId = data.Id;
-            _present(data, next);
+            var proposal = new ProposalModel
+            {
+                DeletedItemId = data.Id
+            };
+            _present(proposal, next);
         }
 
-        public void Cancel(IProposalModel data, Action<string> next)
+        private void Cancel(ActionPayload data, Action<string> next)
         {
-            _present(data, next);
+            var proposal = new ProposalModel { };
+            _present(proposal, next);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SamSAFE.Base;
 
 namespace SamSAFE.Interfaces
 {
@@ -13,6 +14,6 @@ namespace SamSAFE.Interfaces
 
         bool ActionExists(string actionKey);
 
-        void Handle(string action, IProposalModel data, Action<string> next);
+        void Handle(ActionInfo actioninfo, Action<string> next);
     }
 }

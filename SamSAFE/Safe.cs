@@ -137,13 +137,15 @@ namespace SamSAFE
         /// The dispatch method decides whether an action can be dispatched
         /// based on SAFE's context
         /// </summary>
-        public void Dispatch(string action, IProposalModel data, Action<string> next)
+        public void Dispatch(string actionname, object actionPayload, Action<string> next)
         {
+            var actionInfo = new ActionInfo(actionname, actionPayload);
+
             this._logger.Info("dispatcher received request");
             bool dispatch = false;
             var lastStepActions = this._lastStep.Actions;
 
-            this._logger.Info("dispatcher received request" + JsHelpers.JSON.stringify(data));
+            this._logger.Info("dispatcher received request" + JsHelpers.JSON.stringify(actionInfo.Data));
             this._logger.Info("lastStepActions            " + JsHelpers.JSON.stringify(lastStepActions));
 
 
@@ -157,36 +159,36 @@ namespace SamSAFE
                 foreach (var lastStep in lastStepActions)
                 {
                     this._logger.Info(lastStep.ToString());
-                    if (lastStep.Action == action)
+                    if (lastStep.ActionName == actionInfo.Name)
                     {
                         dispatch = true;
                         // tag the action with the stepid
                         // we want to enforce one action per step
                         // if the step does not match we should not dispatch
-                        data.__actionId = lastStep.UId;
+                        actionInfo.__actionId = lastStep.UId;
                         this._logger.Info("tagging action with            " + lastStep.ToString());
 
-                        this._lastStep.Dispatched = action;
+                        this._lastStep.Dispatched = actionInfo.Name;
                     }
                 }
             }
 
             if (!dispatch)
             {
-                this._errorHandler(new { action = action, error = "not allowed" }.ToString());
+                this._errorHandler(new { action = actionInfo.Name, error = "not allowed" }.ToString());
             }
             else
             {
 
-                if (this._actions.ActionExists(action))
+                if (this._actions.ActionExists(actionInfo.Name))
                 {
                     // dispatch action
-                    this._logger.Info("invoking action            " + data.ToString());
-                    this._actions.Handle(action, data, next);
+                    this._logger.Info("invoking action            " + actionInfo.Data.ToString());
+                    this._actions.Handle(actionInfo, next);
                 }
                 else
                 {
-                    this._errorHandler(new { action = action, error = "not found" }.ToString());
+                    this._errorHandler(new { action = actionInfo.Name, error = "not found" }.ToString());
                 }
 
             }
@@ -356,17 +358,17 @@ namespace SamSAFE
 
     public class StepAction
     {
-        public StepAction(string uid, string allowedAction)
+        public StepAction(string uid, string allowedActionName)
         {
             this.UId = uid;
-            this.Action = allowedAction;
+            this.ActionName = allowedActionName;
         }
         public string UId { get; }
-        public string Action { get; }
+        public string ActionName { get; }
 
         public override string ToString()
         {
-            return $"{UId} - {Action}";
+            return $"{UId} - {ActionName}";
         }
     }
 }

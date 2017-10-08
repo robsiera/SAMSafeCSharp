@@ -89,7 +89,7 @@ namespace SamSafeCSharp.Controllers
             //IAutorizor.del(Request, Response, "authorized");
             return false;
         }
-		
+
         #region Sam Calls
 
         /// <summary>
@@ -108,13 +108,13 @@ namespace SamSafeCSharp.Controllers
         /// </summary>
         /// <returns>the updated model</returns>
         [HttpPost("dispatch")]
-        public string Dispatch([FromBody] ProposalModel payload)
+        public string Dispatch([FromBody] ActionPayload payload)
         {
             Request.Cookies.TryGetValue("safe_token", out var safeToken);
             payload.__token = safeToken;
 
             Action<string> nap = PushRepresentation;
-            _safe.Dispatch(payload.__action, payload, nap);
+            _safe.Dispatch(actionInfo, nap);
 
             return _finalRepresantion;
         }
