@@ -15,10 +15,8 @@ namespace SamSafeCSharp.Controllers
     public class SamSafeController : Controller
     {
         private readonly Safe _safe = new Safe();
-
         private readonly IModel _model;
         private readonly IView _view;
-
         private readonly ITimeTraveler _timeTraveler;
         private string _finalRepresantion;
 
@@ -91,11 +89,45 @@ namespace SamSafeCSharp.Controllers
             //IAutorizor.del(Request, Response, "authorized");
             return false;
         }
+		
+        #region Sam Calls
 
-        [HttpPost]
-        public string Present([FromBody] dynamic data)
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        /// <returns>The initial model</returns>
+        [HttpGet("init")]
+        public string Init()
         {
-            _model.Present((ProposalModel)data, PushRepresentation);
+            _timeTraveler?.SaveSnapshot(_model, "");
+            return _view.Init(_model);
+        }
+
+        /// <summary>
+        /// Dispatches an action with its payload.
+        /// </summary>
+        /// <returns>the updated model</returns>
+        [HttpPost("dispatch")]
+        public string Dispatch([FromBody] ProposalModel payload)
+        {
+            Request.Cookies.TryGetValue("safe_token", out var safeToken);
+            payload.__token = safeToken;
+
+            Action<string> nap = PushRepresentation;
+            _safe.Dispatch(payload.__action, payload, nap);
+
+            return _finalRepresantion;
+        }
+
+        /// <summary>
+        /// Presents a proposal to modify the Model.
+        /// </summary>
+        /// <param name="payload">The data.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public string Present([FromBody] dynamic payload)
+        {
+            _model.Present((ProposalModel)payload, PushRepresentation);
             return _finalRepresantion;
         }
 
@@ -109,24 +141,8 @@ namespace SamSafeCSharp.Controllers
             //todo consider using signalR to push new representation to the client
         }
 
-        [HttpGet("init")]
-        public string Init()
-        {
-            _timeTraveler?.SaveSnapshot(_model, "");
-            return _view.Init(_model);
-        }
+        #endregion
 
-        [HttpPost("dispatch")]
-        public string Dispatch([FromBody] ProposalModel data)
-        {
-            Request.Cookies.TryGetValue("safe_token", out var safeToken);
-            data.__token = safeToken;
-
-            Action<string> nap = PushRepresentation;
-            _safe.Dispatch(data.__action, data, nap);
-
-            return _finalRepresantion;
-        }
 
     }
 
