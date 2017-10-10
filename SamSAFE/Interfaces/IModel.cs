@@ -11,7 +11,7 @@ namespace SamSAFE.Interfaces
 
         void Init(Action<IModel, Action<string>> render);
 
-        void Present(ProposalInfo proposalInfo, Action<string> next);
+        void Present(ActionContext actionContext, object proposalData, Action<string> next);
 
     }
 }

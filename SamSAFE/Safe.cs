@@ -137,13 +137,13 @@ namespace SamSAFE
         /// </summary>
         public void Dispatch(string actionname, object actionPayload, Action<string> next)
         {
-            var actionInfo = new ActionInfo(actionname, actionPayload);
+            var actionContext = new ActionContext(actionname);
 
             this._logger.Info("dispatcher received request");
             bool dispatch = false;
             var lastStepActions = this._lastStep.Actions;
 
-            this._logger.Info("dispatcher received request" + JsHelpers.JSON.stringify(actionInfo.Data));
+            this._logger.Info("dispatcher received request" + JsHelpers.JSON.stringify(actionPayload));
             this._logger.Info("lastStepActions            " + JsHelpers.JSON.stringify(lastStepActions));
 
 
@@ -157,44 +157,44 @@ namespace SamSAFE
                 foreach (var lastStep in lastStepActions)
                 {
                     this._logger.Info(lastStep.ToString());
-                    if (lastStep.ActionName == actionInfo.ActionContext.__action)
+                    if (lastStep.ActionName == actionContext.__action)
                     {
                         dispatch = true;
                         // tag the action with the stepid
                         // we want to enforce one action per step
                         // if the step does not match we should not dispatch
-                        actionInfo.ActionContext.__actionId = lastStep.UId;
+                        actionContext.__actionId = lastStep.UId;
                         this._logger.Info("tagging action with            " + lastStep.ToString());
 
-                        this._lastStep.Dispatched = actionInfo.ActionContext.__action;
+                        this._lastStep.Dispatched = actionContext.__action;
                     }
                 }
             }
 
             if (!dispatch)
             {
-                this._errorHandler(new { action = actionInfo.ActionContext.__action, error = "not allowed" }.ToString());
+                this._errorHandler(new { action = actionContext.__action, error = "not allowed" }.ToString());
             }
             else
             {
 
-                if (this._actions.ActionExists(actionInfo.ActionContext.__action))
+                if (this._actions.ActionExists(actionContext.__action))
                 {
                     // dispatch action
-                    this._logger.Info("invoking action            " + actionInfo.Data.ToString());
-                    this._actions.Handle(actionInfo, next);
+                    this._logger.Info("invoking action            " + actionPayload.ToString());
+                    this._actions.Handle(actionContext, actionPayload, next);
                 }
                 else
                 {
-                    this._errorHandler(new { action = actionInfo.ActionContext.__action, error = "not found" }.ToString());
+                    this._errorHandler(new { action = actionContext.__action, error = "not found" }.ToString());
                 }
 
             }
         }
 
-        private void Present(ProposalInfo data, Action<string> next)
+        private void Present(ActionContext actionContext, object data, Action<string> next)
         {
-            string actionId = data.ActionContext.__actionId ?? null;
+            string actionId = actionContext.__actionId ?? null;
 
             if (!this._blocked)
             {
@@ -216,17 +216,17 @@ namespace SamSAFE
                 if (presentData)
                 {
                     Block();
-                    if (!string.IsNullOrEmpty(data.ActionContext.__token))
+                    if (!string.IsNullOrEmpty(actionContext.__token))
                     {
-                        this._model.__session = this._sessionManager.RehydrateSession(data.ActionContext.__token);
-                        this._model.__token = data.ActionContext.__token;
+                        this._model.__session = this._sessionManager.RehydrateSession(actionContext.__token);
+                        this._model.__token = actionContext.__token;
                     }
                     if (this._saveSnapshot != null)
                     {
                         // Store snapshot in TimeTravel
                         this._saveSnapshot(null, data.ToString());
                     }
-                    this._model.Present(data, next);
+                    this._model.Present(actionContext, data, next);
                 }
                 else
                 {

@@ -10,10 +10,10 @@ namespace SamSAFE.Interfaces
 
         //Dictionary<string, Action<IProposalModel, Action<string>>> ActionList { get; set; }
 
-        void Init(Action<ProposalInfo, Action<string>> present);
+        void Init(Action<ActionContext, object, Action<string>> present);
 
         bool ActionExists(string actionKey);
 
-        void Handle(ActionInfo actioninfo, Action<string> next);
+        void Handle(ActionContext actionContext, object actionPayload, Action<string> next);
     }
 }

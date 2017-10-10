@@ -2,7 +2,6 @@
 
 namespace SamSafeCSharp.Components.SAM.Dto
 {
-
     public class ProposalPayload
     {
         public int Id { get; set; }

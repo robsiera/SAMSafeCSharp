@@ -17,11 +17,11 @@ namespace SamSafeCSharp.Components.SAM
     /// </summary>
     public class Actions : IActions
     {
-        private Action<ProposalInfo, Action<string>> _present;
+        private Action<ActionContext, object, Action<string>> _present;
 
         public Dictionary<string, string> Intents { get; set; }
 
-        public Dictionary<string, Action<ActionInfo, Action<string>>> ActionList { get; }
+        public Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>> ActionList { get; }
 
         public Actions()
         {
@@ -33,7 +33,7 @@ namespace SamSafeCSharp.Components.SAM
                 { "cancel", "cancel" }
             };
 
-            ActionList = new Dictionary<string, Action<ActionInfo, Action<string>>>
+            ActionList = new Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>>
             {
                 { "edit", Edit },
                 { "save", Save },
@@ -42,7 +42,7 @@ namespace SamSafeCSharp.Components.SAM
             };
         }
 
-        public void Init(Action<ProposalInfo, Action<string>> present)
+        public void Init(Action<ActionContext, object, Action<string>> present)
         {
             this._present = present ?? DefaultPresent;
         }
@@ -52,23 +52,22 @@ namespace SamSafeCSharp.Components.SAM
             return ActionList.ContainsKey(actionKey);
         }
 
-        public void Handle(ActionInfo actioninfo, Action<string> next)
+        public void Handle(ActionContext actionContext, object actionPayload, Action<string> next)
         {
-            ActionList[actioninfo.ActionContext.__action](actioninfo, next);
+            ActionList[actionContext.__action](actionContext, actionPayload as ActionPayload, next);
         }
 
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
-        private static void DefaultPresent(ProposalInfo data, Action<string> next = null)
+        private static void DefaultPresent(ActionContext actionContext, object data, Action<string> next = null)
         {
             // if this presenter is used, that means we forgot to specify one
             throw new NotImplementedException("Present function not properly initialized?");
         }
 
-        private void Edit(ActionInfo actioninfo, Action<string> next)
+        private void Edit(ActionContext actionContext, ActionPayload data, Action<string> next)
         {
-            var data = actioninfo.Data as ActionPayload;
             var proposalPayload = new ProposalPayload
             {
                 LastEdited = new BlogPost
@@ -78,13 +77,11 @@ namespace SamSafeCSharp.Components.SAM
                     Id = data.Item.Id
                 }
             };
-            var proposal = new ProposalInfo(actioninfo.ActionContext, proposalPayload);
-            _present(proposal, next);
+            _present(actionContext, proposalPayload, next);
         }
 
-        private void Save(ActionInfo actioninfo, Action<string> next)
+        private void Save(ActionContext actionContext, ActionPayload data , Action<string> next)
         {
-            var data = actioninfo.Data as ActionPayload;
             var proposalPayload = new ProposalPayload
             {
                 Item = new BlogPost
@@ -106,34 +103,28 @@ namespace SamSafeCSharp.Components.SAM
 
                 // slow save simulation not yet implemented in C#
                 // save normally
-                var proposal = new ProposalInfo(actioninfo.ActionContext, proposalPayload);
-                _present(proposal, next);
+                _present(actionContext, proposalPayload, next);
             }
             else
             {
                 // proceed as normal when created a new item
-                var proposal = new ProposalInfo(actioninfo.ActionContext, proposalPayload);
-                _present(proposal, next);
+                _present(actionContext, proposalPayload, next);
             }
         }
 
-        private void Delete(ActionInfo actioninfo, Action<string> next)
+        private void Delete(ActionContext actionContext, ActionPayload data , Action<string> next)
         {
-            var data = actioninfo.Data as ActionPayload;
             var proposalPayload = new ProposalPayload
             {
                 DeletedItemId = data.Id
             };
-            var proposal = new ProposalInfo(actioninfo.ActionContext, proposalPayload);
-            _present(proposal, next);
+            _present(actionContext, proposalPayload, next);
         }
 
-        private void Cancel(ActionInfo actioninfo, Action<string> next)
+        private void Cancel(ActionContext actionContext, ActionPayload actionPayload , Action<string> next)
         {
-            var data = actioninfo.Data as ActionPayload;
             var proposalPayload = new ProposalPayload { };
-            var proposal = new ProposalInfo(actioninfo.ActionContext, proposalPayload);
-            _present(proposal, next);
+            _present(actionContext, proposalPayload, next);
         }
     }
 }
