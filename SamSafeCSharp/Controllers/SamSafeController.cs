@@ -120,18 +120,6 @@ namespace SamSafeCSharp.Controllers
         }
 
         /// <summary>
-        /// Presents a proposal to modify the Model.
-        /// </summary>
-        /// <param name="payload">The data.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public string Present([FromBody] dynamic payload)
-        {
-            _model.Present((Proposal)payload, PushRepresentation);
-            return _finalRepresantion;
-        }
-
-        /// <summary>
         /// Pushes the representation to the client
         /// </summary>
         private void PushRepresentation(string representation)
