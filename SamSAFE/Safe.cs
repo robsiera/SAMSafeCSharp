@@ -157,28 +157,28 @@ namespace SamSAFE
                 foreach (var lastStep in lastStepActions)
                 {
                     this._logger.Info(lastStep.ToString());
-                    if (lastStep.ActionName == actionInfo.Name)
+                    if (lastStep.ActionName == actionInfo.ActionContext.__action)
                     {
                         dispatch = true;
                         // tag the action with the stepid
                         // we want to enforce one action per step
                         // if the step does not match we should not dispatch
-                        actionInfo.__actionId = lastStep.UId;
+                        actionInfo.ActionContext.__actionId = lastStep.UId;
                         this._logger.Info("tagging action with            " + lastStep.ToString());
 
-                        this._lastStep.Dispatched = actionInfo.Name;
+                        this._lastStep.Dispatched = actionInfo.ActionContext.__action;
                     }
                 }
             }
 
             if (!dispatch)
             {
-                this._errorHandler(new { action = actionInfo.Name, error = "not allowed" }.ToString());
+                this._errorHandler(new { action = actionInfo.ActionContext.__action, error = "not allowed" }.ToString());
             }
             else
             {
 
-                if (this._actions.ActionExists(actionInfo.Name))
+                if (this._actions.ActionExists(actionInfo.ActionContext.__action))
                 {
                     // dispatch action
                     this._logger.Info("invoking action            " + actionInfo.Data.ToString());
@@ -186,15 +186,15 @@ namespace SamSAFE
                 }
                 else
                 {
-                    this._errorHandler(new { action = actionInfo.Name, error = "not found" }.ToString());
+                    this._errorHandler(new { action = actionInfo.ActionContext.__action, error = "not found" }.ToString());
                 }
 
             }
         }
 
-        private void Present(IProposal data, Action<string> next)
+        private void Present(ProposalInfo data, Action<string> next)
         {
-            string actionId = data.__actionId ?? null;
+            string actionId = data.ActionContext.__actionId ?? null;
 
             if (!this._blocked)
             {
@@ -216,10 +216,10 @@ namespace SamSAFE
                 if (presentData)
                 {
                     Block();
-                    if (!string.IsNullOrEmpty(data.__token))
+                    if (!string.IsNullOrEmpty(data.ActionContext.__token))
                     {
-                        this._model.__session = this._sessionManager.RehydrateSession(data.__token);
-                        this._model.__token = data.__token;
+                        this._model.__session = this._sessionManager.RehydrateSession(data.ActionContext.__token);
+                        this._model.__token = data.ActionContext.__token;
                     }
                     if (this._saveSnapshot != null)
                     {

@@ -10,7 +10,7 @@ namespace SamSAFE.Interfaces
 
         //Dictionary<string, Action<IProposalModel, Action<string>>> ActionList { get; set; }
 
-        void Init(Action<IProposal, Action<string>> present);
+        void Init(Action<ProposalInfo, Action<string>> present);
 
         bool ActionExists(string actionKey);
 

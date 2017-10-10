@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SamSafeCSharp.Components.SAM.Dto;
 using SamSafeCSharp.Helpers;
+using SamSAFE.Base;
 using SamSAFE.Interfaces;
 
 namespace SamSafeCSharp.Components.SAM
@@ -44,11 +45,11 @@ namespace SamSafeCSharp.Components.SAM
             this.Render = render;
         }
 
-        public void Present(IProposal proposalData, Action<string> next)
+        public void Present(ProposalInfo proposalData, Action<string> next)
         {
-            if (!(proposalData is Proposal data))  //c# pattern matching construct. proposalData is cast into data as ProposalModel
+            if (!(proposalData.ProposalPayload is ProposalPayload data))  //c# pattern matching construct. proposalData.ProposalPayload is cast into data as ProposalModel
             {
-                data = new Proposal();
+                data = new ProposalPayload();
             }
 
             if (data.DeletedItemId != 0)

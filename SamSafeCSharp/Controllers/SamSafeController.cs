@@ -130,8 +130,6 @@ namespace SamSafeCSharp.Controllers
         }
 
         #endregion
-
-
     }
 
     public interface IAutorizor

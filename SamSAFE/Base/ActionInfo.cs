@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SamSAFE.Base
+﻿namespace SamSAFE.Base
 {
     public class ActionInfo
     {
-        public ActionInfo(string name, object payload)
+        public ActionInfo(string actionName, object payload)
         {
-            Name = name;
+            ActionContext = new ActionContext(actionName);
             Data = payload;
         }
 
-        public string __actionId { get; set; }
-        public string Name { get; }
+        public ActionContext ActionContext { get; }
         public object Data { get; }
     }
 }
