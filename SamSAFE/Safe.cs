@@ -192,7 +192,7 @@ namespace SamSAFE
             }
         }
 
-        private void Present(IProposalModel data, Action<string> next)
+        private void Present(IProposal data, Action<string> next)
         {
             string actionId = data.__actionId ?? null;
 

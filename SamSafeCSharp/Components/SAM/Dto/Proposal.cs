@@ -2,14 +2,10 @@
 
 namespace SamSafeCSharp.Components.SAM.Dto
 {
-  
-
-    public class ProposalModel : IProposalModel
+    public class Proposal : IProposal
     {
-        public string __action { get; set; }
         public string __actionId { get; set; }
         public string __token { get; set; }
-        public string __session { get; set; }
 
         public int Id { get; set; }
         public BlogPost Item { get; set; }

@@ -17,7 +17,7 @@ namespace SamSafeCSharp.Components.SAM
     /// </summary>
     public class Actions : IActions
     {
-        private Action<IProposalModel, Action<string>> _present;
+        private Action<IProposal, Action<string>> _present;
 
         public Dictionary<string, string> Intents { get; set; }
 
@@ -42,7 +42,7 @@ namespace SamSafeCSharp.Components.SAM
             };
         }
 
-        public void Init(Action<IProposalModel, Action<string>> present)
+        public void Init(Action<IProposal, Action<string>> present)
         {
             this._present = present ?? DefaultPresent;
         }
@@ -60,7 +60,7 @@ namespace SamSafeCSharp.Components.SAM
         /// <summary>
         /// Default Presenter Method. 
         /// </summary>
-        private static void DefaultPresent(IProposalModel data, Action<string> next = null)
+        private static void DefaultPresent(IProposal data, Action<string> next = null)
         {
             // if this presenter is used, that means we forgot to specify one
             throw new NotImplementedException("Present function not properly initialized?");
@@ -68,7 +68,7 @@ namespace SamSafeCSharp.Components.SAM
 
         private void Edit(ActionPayload data, Action<string> next)
         {
-            var proposal = new ProposalModel
+            var proposal = new Proposal
             {
                 LastEdited = new BlogPost
                 {
@@ -82,7 +82,7 @@ namespace SamSafeCSharp.Components.SAM
 
         private void Save(ActionPayload data, Action<string> next)
         {
-            var proposal = new ProposalModel
+            var proposal = new Proposal
             {
                 Item = new BlogPost
                 {
@@ -114,7 +114,7 @@ namespace SamSafeCSharp.Components.SAM
 
         private void Delete(ActionPayload data, Action<string> next)
         {
-            var proposal = new ProposalModel
+            var proposal = new Proposal
             {
                 DeletedItemId = data.Id
             };
@@ -123,7 +123,7 @@ namespace SamSafeCSharp.Components.SAM
 
         private void Cancel(ActionPayload data, Action<string> next)
         {
-            var proposal = new ProposalModel { };
+            var proposal = new Proposal { };
             _present(proposal, next);
         }
     }

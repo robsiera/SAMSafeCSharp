@@ -44,11 +44,11 @@ namespace SamSafeCSharp.Components.SAM
             this.Render = render;
         }
 
-        public void Present(IProposalModel proposalData, Action<string> next)
+        public void Present(IProposal proposalData, Action<string> next)
         {
-            if (!(proposalData is ProposalModel data))  //c# pattern matching construct. proposalData is cast into data as ProposalModel
+            if (!(proposalData is Proposal data))  //c# pattern matching construct. proposalData is cast into data as ProposalModel
             {
-                data = new ProposalModel();
+                data = new Proposal();
             }
 
             if (data.DeletedItemId != 0)

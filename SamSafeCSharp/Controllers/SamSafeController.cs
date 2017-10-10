@@ -127,7 +127,7 @@ namespace SamSafeCSharp.Controllers
         [HttpPost]
         public string Present([FromBody] dynamic payload)
         {
-            _model.Present((ProposalModel)payload, PushRepresentation);
+            _model.Present((Proposal)payload, PushRepresentation);
             return _finalRepresantion;
         }
 

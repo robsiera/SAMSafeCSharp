@@ -11,7 +11,7 @@ namespace SamSAFE.Interfaces
 
         void Init(Action<IModel, Action<string>> render);
 
-        void Present(IProposalModel data, Action<string> next);
+        void Present(IProposal data, Action<string> next);
 
        // List<IItem> Posts { get; }
 
