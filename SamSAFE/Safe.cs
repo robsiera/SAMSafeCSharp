@@ -65,8 +65,7 @@ namespace SamSAFE
         private int _stepCount;
         private Step _lastStep;
         private string[] _allowedActions;
-        private bool _hangback;
-        private Func<int, string> _getSnapshot;
+        private Func<int, string> _getSnapshot; //todo why isn't is being used?
         private bool _blocked;
         private Func<string, string> _displayTimeTravelControls;
 
@@ -86,7 +85,6 @@ namespace SamSAFE
             this._errorHandler = errorHandler ?? DefaultErrorHandler;
             this._logger = logger ?? new DefaultLogger();
 
-            this._hangback = false;
             this._steps = new List<Step>();
             this._stepCount = 0;
             this._lastStep = this.NewStep(this._stepCount);
