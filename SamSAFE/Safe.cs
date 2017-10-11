@@ -163,7 +163,7 @@ namespace SamSAFE
                         // tag the action with the stepid
                         // we want to enforce one action per step
                         // if the step does not match we should not dispatch
-                        actionContext.__actionId = lastStep.UId;
+                        actionContext.__actionUId = lastStep.UId;
                         this._logger.Info("tagging action with            " + lastStep.ToString());
 
                         this._lastStep.Dispatched = actionContext.__action;
@@ -194,7 +194,7 @@ namespace SamSAFE
 
         private void Present(ActionContext actionContext, object data, Action<string> next)
         {
-            string actionId = actionContext.__actionId ?? null;
+            string actionId = actionContext.__actionUId ?? null;
 
             if (!this._blocked)
             {
@@ -255,7 +255,7 @@ namespace SamSAFE
         private Step NewStep(int uId = 0, string[] allowedActions = null)
         {
             _allowedActions = allowedActions ?? new string[] { };
-            Step step = new Step(uId, allowedActions);
+            var step = new Step(uId, allowedActions);
 
             this._steps.Add(step);
             this._logger.Info("new step        :" + JsHelpers.JSON.stringify(step));

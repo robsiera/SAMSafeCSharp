@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace SamSAFE
 {
-    public static class JsHelpers
+    internal static class JsHelpers
     {
         public static class JSON
         {

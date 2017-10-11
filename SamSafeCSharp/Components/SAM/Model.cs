@@ -13,6 +13,9 @@ namespace SamSafeCSharp.Components.SAM
         private readonly IJsonStore _jsonStore;
         private Action<IModel, Action<string>> _render;
 
+        public string __session { get; set; }
+        public string __token { get; set; }
+
         public Model(IJsonStore jsonStore)
         {
             _jsonStore = jsonStore;
@@ -98,16 +101,8 @@ namespace SamSafeCSharp.Components.SAM
 
             //console.log(model);
             this._render(this, next);
-
         }
 
-        public string __token { get; set; }
-        public string __session { get; set; }
-
-
-        public int ItemId { get; set; }
-
-        public IState State { get; set; }
 
         public BlogPost LastDeleted { get; set; }
 
