@@ -12,15 +12,6 @@ namespace SamSafeCSharp.Components.Sam
         {
         }
 
-        //view.intents = { edit: 'edit', save: 'save', delete: 'delete', cancel: 'cancel' } ;
-        private readonly Dictionary<string, string> _intents = new Dictionary<string, string>()
-        {
-            {"edit","edit"},
-            {"save","save"},
-            {"delete","delete"},
-            {"cancel","cancel"},
-        };
-
         public string Init(dynamic model)
         {
             return Ready(model);
@@ -31,7 +22,7 @@ namespace SamSafeCSharp.Components.Sam
             var model = iModel as Model;
 
             if (intents == null)
-                intents = _intents; // todo: intents never used??
+                intents = Actions.AllIntents; // todo: intents never used??
 
             var id = JsHelpers.orDefault(model?.LastEdited?.Id.ToString(), "");
 

@@ -17,56 +17,42 @@ namespace SamSafeCSharp.Components.Sam
     /// </summary>
     public class Actions : IActions
     {
-        private Action<ActionContext, object, Action<string>> _present;
+        #region Action Names Constants
 
-        public Dictionary<string, string> Intents { get; set; }
+        public static string Edit => "edit";
+        public static string Save => "save";
+        public static string Delete => "delete";
+        public static string Cancel => "cancel";
 
-        public Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>> ActionList { get; }
+        #endregion
 
         public Actions()
         {
-            Intents = new Dictionary<string, string>
+            // Dictionary of IntentName, ActionName
+            AllIntents = new Dictionary<string, string>
             {
-                { "edit", "edit" },
-                { "save", "save" },
-                { "delete", "delete" },
-                { "cancel", "cancel" }
+                { "edit", Actions.Edit },
+                { "save", Actions.Save },
+                { "delete", Actions.Delete },
+                { "cancel", Actions.Cancel }
             };
 
+            // Dictionary of ActionName, ActionHandlerMethod
             ActionList = new Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>>
             {
-                { "edit", Edit },
-                { "save", Save },
-                { "delete", Delete },
-                { "cancel", Cancel }
+                { Actions.Edit, EditHandler },
+                { Actions.Save, SaveHandler },
+                { Actions.Delete, DeleteHandler },
+                { Actions.Cancel, CancelHandler }
             };
+
+            Intents = AllIntents;
         }
 
-        public void Init(Action<ActionContext, object, Action<string>> present)
-        {
-            this._present = present ?? DefaultPresent;
-        }
 
-        public bool ActionExists(string actionKey)
-        {
-            return ActionList.ContainsKey(actionKey);
-        }
+        #region Action Handlers / Proposal Creators
 
-        public void Handle(ActionContext actionContext, object actionPayload, Action<string> next)
-        {
-            ActionList[actionContext.__action](actionContext, actionPayload as ActionPayload, next);
-        }
-
-        /// <summary>
-        /// Default Presenter Method. 
-        /// </summary>
-        private static void DefaultPresent(ActionContext actionContext, object data, Action<string> next = null)
-        {
-            // if this presenter is used, that means we forgot to specify one
-            throw new NotImplementedException("Present function not properly initialized?");
-        }
-
-        private void Edit(ActionContext actionContext, ActionPayload data, Action<string> next)
+        private void EditHandler(ActionContext actionContext, ActionPayload data, Action<string> next)
         {
             var proposalPayload = new ProposalPayload
             {
@@ -80,7 +66,7 @@ namespace SamSafeCSharp.Components.Sam
             _present(actionContext, proposalPayload, next);
         }
 
-        private void Save(ActionContext actionContext, ActionPayload data , Action<string> next)
+        private void SaveHandler(ActionContext actionContext, ActionPayload data, Action<string> next)
         {
             var proposalPayload = new ProposalPayload
             {
@@ -112,7 +98,7 @@ namespace SamSafeCSharp.Components.Sam
             }
         }
 
-        private void Delete(ActionContext actionContext, ActionPayload data , Action<string> next)
+        private void DeleteHandler(ActionContext actionContext, ActionPayload data, Action<string> next)
         {
             var proposalPayload = new ProposalPayload
             {
@@ -121,10 +107,48 @@ namespace SamSafeCSharp.Components.Sam
             _present(actionContext, proposalPayload, next);
         }
 
-        private void Cancel(ActionContext actionContext, ActionPayload actionPayload , Action<string> next)
+        private void CancelHandler(ActionContext actionContext, ActionPayload actionPayload, Action<string> next)
         {
             var proposalPayload = new ProposalPayload { };
             _present(actionContext, proposalPayload, next);
         }
+
+        #endregion
+
+        #region SAM boilerplate code
+
+        public static Dictionary<string, string> AllIntents;
+        public Dictionary<string, string> Intents { get; set; }
+
+
+        private Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>> ActionList { get; }
+        private Action<ActionContext, object, Action<string>> _present;
+
+
+        public void Init(Action<ActionContext, object, Action<string>> present)
+        {
+            this._present = present ?? DefaultPresent;
+        }
+
+        public bool ActionExists(string actionKey)
+        {
+            return ActionList.ContainsKey(actionKey);
+        }
+
+        public void Handle(ActionContext actionContext, object actionPayload, Action<string> next)
+        {
+            ActionList[actionContext.__action](actionContext, actionPayload as ActionPayload, next);
+        }
+
+        /// <summary>
+        /// Default Presenter Method. 
+        /// </summary>
+        private static void DefaultPresent(ActionContext actionContext, object data, Action<string> next = null)
+        {
+            // if this presenter is used, that means we forgot to specify one
+            throw new NotImplementedException("Present function not properly initialized?");
+        }
+
+        #endregion
     }
 }
