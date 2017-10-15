@@ -12,11 +12,6 @@ namespace SamSafeCSharp.Components.Sam
         {
         }
 
-        public string Init(dynamic model)
-        {
-            return Ready(model);
-        }
-
         public string Ready(IModel iModel, Dictionary<string, string> intents = null)
         {
             var model = iModel as Model;
@@ -45,6 +40,13 @@ namespace SamSafeCSharp.Components.Sam
             return JsHelpers.JSON.stringify(viewModel);
         }
 
+        #region SAM boilerplate code
+
+        public string Init(dynamic model)
+        {
+            return Ready(model);
+        }
+
         public void Display(string representation, Action<string> next)
         {
             if (next != null)
@@ -59,5 +61,7 @@ namespace SamSafeCSharp.Components.Sam
                 //stateRepresentation.innerHTML = representation;
             }
         }
+
+        #endregion
     }
 }

@@ -15,7 +15,7 @@ namespace SamSafeCSharp.Components.Sam
     /// For instance, we can define an action which will invoke a 3rd party validation service, which given an address, 
     /// returns the postal address (or an error). It is then the postal address which is presented to the model.
     /// </summary>
-    public class Actions : IActions
+    public class Actions : BaseActions<ActionPayload, ProposalPayload>
     {
         #region Action Names Constants
 
@@ -28,27 +28,18 @@ namespace SamSafeCSharp.Components.Sam
 
         public Actions()
         {
-            // Dictionary of IntentName, ActionName
-            AllIntents = new Dictionary<string, string>
-            {
-                { "edit", Actions.Edit },
-                { "save", Actions.Save },
-                { "delete", Actions.Delete },
-                { "cancel", Actions.Cancel }
-            };
+            RegisterActionHandler(Actions.Edit, EditHandler);
+            RegisterActionHandler(Actions.Save, SaveHandler);
+            RegisterActionHandler(Actions.Delete, DeleteHandler);
+            RegisterActionHandler(Actions.Cancel, CancelHandler);
 
-            // Dictionary of ActionName, ActionHandlerMethod
-            ActionList = new Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>>
-            {
-                { Actions.Edit, EditHandler },
-                { Actions.Save, SaveHandler },
-                { Actions.Delete, DeleteHandler },
-                { Actions.Cancel, CancelHandler }
-            };
+            RegisterIntent("edit", Actions.Edit);
+            RegisterIntent("save", Actions.Save);
+            RegisterIntent("delete", Actions.Delete);
+            RegisterIntent("cancel", Actions.Cancel);
 
             Intents = AllIntents;
         }
-
 
         #region Action Handlers / Proposal Creators
 
@@ -63,7 +54,7 @@ namespace SamSafeCSharp.Components.Sam
                     Id = data.Item.Id
                 }
             };
-            _present(actionContext, proposalPayload, next);
+            Present(actionContext, proposalPayload, next);
         }
 
         private void SaveHandler(ActionContext actionContext, ActionPayload data, Action<string> next)
@@ -89,12 +80,12 @@ namespace SamSafeCSharp.Components.Sam
 
                 // slow save simulation not yet implemented in C#
                 // save normally
-                _present(actionContext, proposalPayload, next);
+                Present(actionContext, proposalPayload, next);
             }
             else
             {
                 // proceed as normal when created a new item
-                _present(actionContext, proposalPayload, next);
+                Present(actionContext, proposalPayload, next);
             }
         }
 
@@ -104,51 +95,16 @@ namespace SamSafeCSharp.Components.Sam
             {
                 DeletedItemId = data.Id
             };
-            _present(actionContext, proposalPayload, next);
+            Present(actionContext, proposalPayload, next);
         }
 
         private void CancelHandler(ActionContext actionContext, ActionPayload actionPayload, Action<string> next)
         {
             var proposalPayload = new ProposalPayload { };
-            _present(actionContext, proposalPayload, next);
+            Present(actionContext, proposalPayload, next);
         }
 
         #endregion
 
-        #region SAM boilerplate code
-
-        public static Dictionary<string, string> AllIntents;
-        public Dictionary<string, string> Intents { get; set; }
-
-
-        private Dictionary<string, Action<ActionContext, ActionPayload, Action<string>>> ActionList { get; }
-        private Action<ActionContext, object, Action<string>> _present;
-
-
-        public void Init(Action<ActionContext, object, Action<string>> present)
-        {
-            this._present = present ?? DefaultPresent;
-        }
-
-        public bool ActionExists(string actionKey)
-        {
-            return ActionList.ContainsKey(actionKey);
-        }
-
-        public void Handle(ActionContext actionContext, object actionPayload, Action<string> next)
-        {
-            ActionList[actionContext.__action](actionContext, actionPayload as ActionPayload, next);
-        }
-
-        /// <summary>
-        /// Default Presenter Method. 
-        /// </summary>
-        private static void DefaultPresent(ActionContext actionContext, object data, Action<string> next = null)
-        {
-            // if this presenter is used, that means we forgot to specify one
-            throw new NotImplementedException("Present function not properly initialized?");
-        }
-
-        #endregion
     }
 }

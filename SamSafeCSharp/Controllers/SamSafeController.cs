@@ -14,7 +14,7 @@ namespace SamSafeCSharp.Controllers
     [Route("api/[controller]")]
     public class SamSafeController : Controller
     {
-        private readonly Safe _safe = new Safe();
+        private readonly Safe<ActionPayload, ProposalPayload> _safe = new Safe<ActionPayload,ProposalPayload>();
         private readonly IModel _model;
         private readonly IView _view;
         private readonly ITimeTraveler _timeTraveler;
@@ -25,8 +25,8 @@ namespace SamSafeCSharp.Controllers
             IJsonStore jsonStore = new SessionStore(httpContextAccessor);
 
             // Business Logic - SAM Pattern
-            Actions actions = new Actions();
-            State state = new State();
+            var actions = new Actions();
+            var state = new State();
             this._model = new Model(jsonStore);
             this._view = new View();
 
@@ -114,7 +114,7 @@ namespace SamSafeCSharp.Controllers
             payload.__token = safeToken;
 
             Action<string> nap = PushRepresentation;
-            _safe.Dispatch(payload.__action, payload, nap);
+            _safe.Dispatch(payload.__intentName, payload, nap);
 
             return _finalRepresantion;
         }

@@ -2,12 +2,12 @@
 {
   public class ActionContext
     {
-        public ActionContext(string actionName)
+        public ActionContext(string intentName)
         {
-            this.__action = actionName;
+            this.__intentName = intentName;
         }
 
-        public string __action { get; }
+        public string __intentName { get; }
 
         /// <summary>
         /// Gets or sets the action Universal Identifier which includes Step information

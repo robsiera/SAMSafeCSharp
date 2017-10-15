@@ -4,7 +4,7 @@ namespace SamSafeCSharp.Components.Sam.Dto
 {
     public class ActionPayload 
     {
-        public string __action { get; set; }
+        public string __intentName { get; set; }
         public string __token { get; set; }
 
         public int Id { get; set; }

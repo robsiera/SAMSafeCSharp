@@ -67,6 +67,5 @@ namespace SamSafeCSharp.Components.Sam
             this.Representation(model, next);
             this.NextAction(model);
         }
-
     }
 }

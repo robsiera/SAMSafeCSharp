@@ -43,18 +43,13 @@ using SamSAFE.Interfaces;
 //  TODO
 //  - server side time travel
 //  - caching (idempotent actions)
-// import { saveSnapshot, getSnapshot } from './timeTravelStore.js'  ;
-
-
-
-
 
 namespace SamSAFE
 {
-    public class Safe
+    public class Safe<TActionModel, TProposalModel>
     {
         private Func<IModel, string, int> _saveSnapshot;
-        private IActions _actions;
+        private BaseActions<TActionModel, TProposalModel> _actions;
         private IModel _model;
         private IState _state;
         private IView _view;
@@ -75,7 +70,7 @@ namespace SamSAFE
         /// <summary>
         /// Insert SAFE middleware and wire SAM components
         /// </summary>
-        public void Init(IActions actions, IModel model, IState state, IView view, ILogger logger = null, Action<string> errorHandler = null, ISessionManager sessionManager = null)
+        public void Init(BaseActions<TActionModel, TProposalModel> actions, IModel model, IState state, IView view, ILogger logger = null, Action<string> errorHandler = null, ISessionManager sessionManager = null)
         {
             this._actions = actions;
             this._model = model;
@@ -135,9 +130,9 @@ namespace SamSAFE
         /// The dispatch method decides whether an action can be dispatched
         /// based on SAFE's context
         /// </summary>
-        public void Dispatch(string actionname, object actionPayload, Action<string> next)
+        public void Dispatch(string intentname, TActionModel actionPayload, Action<string> next)
         {
-            var actionContext = new ActionContext(actionname);
+            var actionContext = new ActionContext(intentname);
 
             this._logger.Info("dispatcher received request");
             bool dispatch = false;
@@ -154,10 +149,10 @@ namespace SamSAFE
             }
             else
             {
-                foreach (var lastStep in lastStepActions)
+                foreach (StepAction lastStep in lastStepActions)
                 {
                     this._logger.Info(lastStep.ToString());
-                    if (lastStep.ActionName == actionContext.__action)
+                    if (lastStep.ActionName == actionContext.__intentName)
                     {
                         dispatch = true;
                         // tag the action with the stepid
@@ -166,33 +161,33 @@ namespace SamSAFE
                         actionContext.__actionUId = lastStep.UId;
                         this._logger.Info("tagging action with            " + lastStep.ToString());
 
-                        this._lastStep.Dispatched = actionContext.__action;
+                        this._lastStep.Dispatched = actionContext.__intentName;
                     }
                 }
             }
 
             if (!dispatch)
             {
-                this._errorHandler(new { action = actionContext.__action, error = "not allowed" }.ToString());
+                this._errorHandler(new { action = actionContext.__intentName, error = "not allowed" }.ToString());
             }
             else
             {
 
-                if (this._actions.ActionExists(actionContext.__action))
+                if (this._actions.IntentExists(actionContext.__intentName))
                 {
-                    // dispatch action
-                    this._logger.Info("invoking action            " + actionPayload.ToString());
+                    // dispatch intent
+                    this._logger.Info("invoking action            " + intentname.ToString());
                     this._actions.Handle(actionContext, actionPayload, next);
                 }
                 else
                 {
-                    this._errorHandler(new { action = actionContext.__action, error = "not found" }.ToString());
+                    this._errorHandler(new { action = actionContext.__intentName, error = "not found" }.ToString());
                 }
 
             }
         }
 
-        private void Present(ActionContext actionContext, object data, Action<string> next)
+        private void Present(ActionContext actionContext, TProposalModel data, Action<string> next)
         {
             string actionId = actionContext.__actionUId ?? null;
 
