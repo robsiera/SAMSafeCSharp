@@ -4,7 +4,7 @@ using System.Diagnostics;
 using SamSafeCSharp.Helpers;
 using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components.SAM
+namespace SamSafeCSharp.Components.Sam
 {
     public class View : IView
     {

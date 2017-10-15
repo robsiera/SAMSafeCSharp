@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using SamSafeCSharp.Components.SAM.Dto;
+using SamSafeCSharp.Components.Sam.Dto;
 using SamSAFE.Base;
 using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components.SAM
+namespace SamSafeCSharp.Components.Sam
 {
     /// <summary>
     /// Actions are responsible for implementing context specific logic. 

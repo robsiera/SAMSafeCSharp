@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SamSafeCSharp.Components.SAM;
-using SamSafeCSharp.Components.SAM.Dto;
+using SamSafeCSharp.Components.Sam;
+using SamSafeCSharp.Components.Sam.Dto;
 using SamSafeCSharp.Helpers;
 using SamSAFE;
 using SamSAFE.Base;

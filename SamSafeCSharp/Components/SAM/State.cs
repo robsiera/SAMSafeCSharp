@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components.SAM
+namespace SamSafeCSharp.Components.Sam
 {
     public class State : IState
     {

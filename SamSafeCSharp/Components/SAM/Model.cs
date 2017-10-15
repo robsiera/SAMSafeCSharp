@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SamSafeCSharp.Components.SAM.Dto;
+using SamSafeCSharp.Components.Sam.Dto;
 using SamSafeCSharp.Helpers;
 using SamSAFE.Base;
 using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components.SAM
+namespace SamSafeCSharp.Components.Sam
 {
     public class Model : IModel
     {

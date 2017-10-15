@@ -1,6 +1,6 @@
 ﻿using SamSAFE.Interfaces;
 
-namespace SamSafeCSharp.Components.SAM.Dto
+namespace SamSafeCSharp.Components.Sam.Dto
 {
     public class ProposalPayload
     {
